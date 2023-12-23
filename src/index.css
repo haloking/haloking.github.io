@@ -1,0 +1,70 @@
+/* avoid fixed top nav-bar from hiding content */
+.default-top-margin {
+    margin-top: 100px;
+}
+
+/* two columns scrollable independently */
+div#col-left,
+div#col-right {
+    max-height: 100vh;
+    overflow-y: scroll;
+}
+
+/* make youtube full width */
+.youtube-window {
+    position: relative;
+    margin-top: 100px;
+    padding-top: 56.25%;
+    /* background-color: yellow; */
+}
+.youtube-position {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.text-button {
+    border: none;
+    background-color: inherit;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    /* display: inline-block; */
+}
+
+.text-button-subtitle {
+    border: none;
+    background-color: inherit;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    font-style: italic;
+    /* display: inline-block; */
+}
+
+.form-control-dictation {
+    border: none;
+    text-align: center;
+}
+
+.form-control-dictation-right {
+    border: none;
+    text-align: center;
+    border-bottom: 2px solid blue;
+}
+
+.form-control-dictation-wrong {
+    border: none;
+    text-align: center;
+    border-bottom: 2px solid red;
+}
+
+input:focus {
+    outline: none;
+}
