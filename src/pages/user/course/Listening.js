@@ -597,12 +597,12 @@ export default function Learning() {
 
         // console.log(tapescript[textIndex].english);
 
-        if (answer0.toLowerCase() != correctAnswer0.toLowerCase()) setAnswer0(correctAnswer0);
-        if (answer1.toLowerCase() != correctAnswer1.toLowerCase()) setAnswer1(correctAnswer1);
-        if (answer2.toLowerCase() != correctAnswer2.toLowerCase()) setAnswer2(correctAnswer2);
-        if (answer3.toLowerCase() != correctAnswer3.toLowerCase()) setAnswer3(correctAnswer3);
-        if (answer4.toLowerCase() != correctAnswer4.toLowerCase()) setAnswer4(correctAnswer4);
-        if (answer5.toLowerCase() != correctAnswer5.toLowerCase()) setAnswer5(correctAnswer5);
+        if (answer0.toLowerCase() !== correctAnswer0.toLowerCase()) setAnswer0(correctAnswer0);
+        if (answer1.toLowerCase() !== correctAnswer1.toLowerCase()) setAnswer1(correctAnswer1);
+        if (answer2.toLowerCase() !== correctAnswer2.toLowerCase()) setAnswer2(correctAnswer2);
+        if (answer3.toLowerCase() !== correctAnswer3.toLowerCase()) setAnswer3(correctAnswer3);
+        if (answer4.toLowerCase() !== correctAnswer4.toLowerCase()) setAnswer4(correctAnswer4);
+        if (answer5.toLowerCase() !== correctAnswer5.toLowerCase()) setAnswer5(correctAnswer5);
 
         setAnswerWholeSentence(tapescript[textIndex].english);
     };
