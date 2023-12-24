@@ -6,7 +6,7 @@ import { Badge } from 'antd';
 import { Link } from 'react-router-dom';
 // import AdFeatures from './AdFeatures';
 
-import { formatNumber } from '../../helpers/ad';
+import { formatNumber } from '../../helpers/course';
 
 export default function CourseCard({ course }) {
     // access context
