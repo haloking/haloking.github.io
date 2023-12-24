@@ -6,7 +6,7 @@ import axios from 'axios';
 import React from 'react';
 import ReactPlayer from 'react-player';
 
-import sound from '../../../assets/audio/audiotest.mp3';
+// import sound from '../../../assets/audio/audiotest.mp3';
 // import { tapeScript } from '../../../helpers/tapeScript';
 
 export default function Learning() {
