@@ -75,7 +75,6 @@ export default function NavBar() {
                                 <li className="nav-item dropdown">
                                     <a
                                         className="nav-link dropdown-toggle"
-                                        href="#"
                                         id="navbarDropdown"
                                         role="button"
                                         data-bs-toggle="dropdown"
@@ -90,7 +89,7 @@ export default function NavBar() {
                                             </a>
                                         </li>
                                         <li>
-                                            <a onClick={logout} className="dropdown-item" href="">
+                                            <a onClick={logout} className="dropdown-item">
                                                 Logout
                                             </a>
                                         </li>
@@ -98,9 +97,7 @@ export default function NavBar() {
                                             <hr className="dropdown-divider"></hr>
                                         </li>
                                         <li>
-                                            <a className="dropdown-item" href="#">
-                                                Something else here
-                                            </a>
+                                            <a className="dropdown-item">Something else here</a>
                                         </li>
                                     </ul>
                                 </li>

@@ -668,20 +668,16 @@ export default function Learning() {
                             {/* navbar when learning */}
                             <nav className="navbar navbar-expand-lg navbar-light bg-light ">
                                 <div className="container-fluid">
-                                    <a className="navbar-brand" href="#">
-                                        Navbar
+                                    <a className="navbar-brand" href="/">
+                                        EEE
                                     </a>
-                                    <a className="navbar-brand" href="#">
+                                    <a className="navbar-brand" href={`/course/${course.slug}`}>
                                         {course.title}
                                     </a>
-                                    <button onClick={handleShowDictation} className="navbar-brand btn-primary" href="#">
+                                    <button onClick={handleShowDictation} className="navbar-brand btn-primary">
                                         Nghe chép chính tả
                                     </button>
-                                    <button
-                                        onClick={handleShowTapescript}
-                                        className="navbar-brand btn-primary"
-                                        href="#"
-                                    >
+                                    <button onClick={handleShowTapescript} className="navbar-brand btn-primary">
                                         Nghe có lời thoại
                                     </button>
                                     <button
@@ -697,12 +693,10 @@ export default function Learning() {
                                     </button>
                                     <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
                                         <div className="navbar-nav">
-                                            <a className="nav-link active" aria-current="page" href="#">
+                                            <a className="nav-link active" aria-current="page">
                                                 Quá trình học tập
                                             </a>
-                                            <a className="nav-link" href="#">
-                                                Hướng dẫn
-                                            </a>
+                                            <a className="nav-link">Hướng dẫn</a>
                                         </div>
                                     </div>
                                 </div>
@@ -833,7 +827,7 @@ export default function Learning() {
                                         </button>
                                     </div>
 
-                                    {level != 'all' ? (
+                                    {level !== 'all' ? (
                                         // listening then fill in the blanks
                                         <div className="mt-3">
                                             {tapescript[textIndex]?.seperatedText?.map((word, index) => {
