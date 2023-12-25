@@ -273,32 +273,32 @@ export default function CourseForm() {
     }
 
     // handle edit curriculum modal
-    const editCurriculumModal = document.getElementById('edit-curriculum-modal');
-    const btnEditCurriculum = document.getElementById('btn-edit-curriculum');
+    // const editCurriculumModal = document.getElementById('edit-curriculum-modal');
+    // const btnEditCurriculum = document.getElementById('btn-edit-curriculum');
 
-    const inputUpdatedCurriculumTitle = document.getElementById('curriculum-name');
+    // const inputUpdatedCurriculumTitle = document.getElementById('curriculum-name');
 
-    if (editCurriculumModal) {
-        editCurriculumModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
+    // if (editCurriculumModal) {
+    //     editCurriculumModal.addEventListener('show.bs.modal', function (event) {
+    //         const button = event.relatedTarget;
 
-            const index = button.getAttribute('data-bs-id');
+    //         const index = button.getAttribute('data-bs-id');
 
-            const currentTitle = button.getAttribute('current-title');
+    //         const currentTitle = button.getAttribute('current-title');
 
-            editCurriculumModal.addEventListener('hide.bs.modal', function (event) {
-                const updatedTitle = inputUpdatedCurriculumTitle.getAttribute('value');
+    //         editCurriculumModal.addEventListener('hide.bs.modal', function (event) {
+    //             const updatedTitle = inputUpdatedCurriculumTitle.getAttribute('value');
 
-                btnEditCurriculum.onclick = function () {
-                    console.log(index);
-                    console.log('Current title: ', currentTitle);
-                    console.log('Updated title: ', updatedTitle);
+    //             btnEditCurriculum.onclick = function () {
+    //                 console.log(index);
+    //                 console.log('Current title: ', currentTitle);
+    //                 console.log('Updated title: ', updatedTitle);
 
-                    handleEditCurriculum(index, updatedTitle);
-                };
-            });
-        });
-    }
+    //                 handleEditCurriculum(index, updatedTitle);
+    //             };
+    //         });
+    //     });
+    // }
 
     // handle delete lesson modal
     const deleteLessonModal = document.getElementById('delete-lesson-modal');
@@ -524,7 +524,7 @@ export default function CourseForm() {
                     <LessonEditModal></LessonEditModal>
 
                     {/* Popup Edit Curriculum Modal */}
-                    <CurriculumEditModal></CurriculumEditModal>
+                    <CurriculumEditModal handleEditCurriculum={handleEditCurriculum}></CurriculumEditModal>
                 </div>
 
                 {/* <pre>{JSON.stringify(course, null, 4)}</pre> */}
