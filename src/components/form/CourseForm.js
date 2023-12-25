@@ -58,7 +58,17 @@ export default function CourseForm() {
         console.log('Local storage:', storagedCurriculums);
 
         // if do not have storagedCurriculums then set initialCurriculums
-        return storagedCurriculums ?? initialCurriculums;
+        // return storagedCurriculums ?? initialCurriculums;
+        if (storagedCurriculums) {
+            return storagedCurriculums;
+        } else {
+            // save to local storage
+            const jsonCurriculums = JSON.stringify(initialCurriculums);
+            localStorage.setItem('curriculums', jsonCurriculums);
+            console.log('Local storage:', initialCurriculums);
+
+            return initialCurriculums;
+        }
     });
 
     // state for add new curricumlum
