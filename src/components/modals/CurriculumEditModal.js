@@ -3,32 +3,34 @@ import { useState } from 'react';
 export default function CurriculumEditModal({ handleEditCurriculum }) {
     const [title, setTitle] = useState('');
 
-    const editCurriculumModal = document.getElementById('edit-curriculum-modal');
-    const btnEditCurriculum = document.getElementById('btn-edit-curriculum');
+    document.addEventListener('DOMContentLoaded', function () {
+        const editCurriculumModal = document.getElementById('edit-curriculum-modal');
+        const btnEditCurriculum = document.getElementById('btn-edit-curriculum');
 
-    const inputUpdatedCurriculumTitle = document.getElementById('curriculum-name');
+        const inputUpdatedCurriculumTitle = document.getElementById('curriculum-name');
+        console.log(editCurriculumModal);
+        if (editCurriculumModal) {
+            editCurriculumModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
 
-    if (editCurriculumModal) {
-        editCurriculumModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
+                const index = button.getAttribute('data-bs-id');
 
-            const index = button.getAttribute('data-bs-id');
+                const currentTitle = button.getAttribute('current-title');
 
-            const currentTitle = button.getAttribute('current-title');
+                editCurriculumModal.addEventListener('hide.bs.modal', function (event) {
+                    const updatedTitle = inputUpdatedCurriculumTitle.getAttribute('value');
 
-            editCurriculumModal.addEventListener('hide.bs.modal', function (event) {
-                const updatedTitle = inputUpdatedCurriculumTitle.getAttribute('value');
+                    btnEditCurriculum.onclick = function () {
+                        console.log(index);
+                        console.log('Current title: ', currentTitle);
+                        console.log('Updated title: ', updatedTitle);
 
-                btnEditCurriculum.onclick = function () {
-                    console.log(index);
-                    console.log('Current title: ', currentTitle);
-                    console.log('Updated title: ', updatedTitle);
-
-                    handleEditCurriculum(index, updatedTitle);
-                };
+                        handleEditCurriculum(index, updatedTitle);
+                    };
+                });
             });
-        });
-    }
+        }
+    });
 
     return (
         <>
