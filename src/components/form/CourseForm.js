@@ -254,23 +254,23 @@ export default function CourseForm() {
         });
     };
 
-    // handle delete curriculum modal
-    const deleteCurriculumModal = document.getElementById('delete-curriculum-modal');
-    const btnDeleteCurriculum = document.getElementById('btn-delete-curriculum');
+    // // handle delete curriculum modal
+    // const deleteCurriculumModal = document.getElementById('delete-curriculum-modal');
+    // const btnDeleteCurriculum = document.getElementById('btn-delete-curriculum');
 
-    if (deleteCurriculumModal) {
-        deleteCurriculumModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
+    // if (deleteCurriculumModal) {
+    //     deleteCurriculumModal.addEventListener('show.bs.modal', function (event) {
+    //         const button = event.relatedTarget;
 
-            const index = button.getAttribute('data-bs-id');
+    //         const index = button.getAttribute('data-bs-id');
 
-            btnDeleteCurriculum.onclick = function () {
-                console.log(index);
+    //         btnDeleteCurriculum.onclick = function () {
+    //             console.log(index);
 
-                handleDeleteCurriculum(index);
-            };
-        });
-    }
+    //             handleDeleteCurriculum(index);
+    //         };
+    //     });
+    // }
 
     // handle edit curriculum modal
     // const editCurriculumModal = document.getElementById('edit-curriculum-modal');
@@ -278,8 +278,14 @@ export default function CourseForm() {
 
     // const inputUpdatedCurriculumTitle = document.getElementById('curriculum-name');
 
+    // console.log(editCurriculumModal);
+    // console.log(btnEditCurriculum);
+    // console.log(inputUpdatedCurriculumTitle);
+
     // if (editCurriculumModal) {
     //     editCurriculumModal.addEventListener('show.bs.modal', function (event) {
+    //         console.log('here, modal event listened');
+
     //         const button = event.relatedTarget;
 
     //         const index = button.getAttribute('data-bs-id');
@@ -300,54 +306,54 @@ export default function CourseForm() {
     //     });
     // }
 
-    // handle delete lesson modal
-    const deleteLessonModal = document.getElementById('delete-lesson-modal');
-    const btnDeleteLesson = document.getElementById('btn-delete-lesson');
+    // // handle delete lesson modal
+    // const deleteLessonModal = document.getElementById('delete-lesson-modal');
+    // const btnDeleteLesson = document.getElementById('btn-delete-lesson');
 
-    if (deleteLessonModal) {
-        deleteLessonModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
+    // if (deleteLessonModal) {
+    //     deleteLessonModal.addEventListener('show.bs.modal', function (event) {
+    //         const button = event.relatedTarget;
 
-            const slug = button.getAttribute('data-bs-id');
-            const indexLesson = button.getAttribute('index');
+    //         const slug = button.getAttribute('data-bs-id');
+    //         const indexLesson = button.getAttribute('index');
 
-            btnDeleteLesson.onclick = function () {
-                console.log(slug);
-                console.log(indexLesson);
+    //         btnDeleteLesson.onclick = function () {
+    //             console.log(slug);
+    //             console.log(indexLesson);
 
-                handleDeleteLesson(slug, indexLesson);
-            };
-        });
-    }
+    //             handleDeleteLesson(slug, indexLesson);
+    //         };
+    //     });
+    // }
 
-    // handle edit lesson modal
-    const editLessonModal = document.getElementById('edit-lesson-modal');
-    const btnEditLesson = document.getElementById('btn-edit-lesson');
+    // // handle edit lesson modal
+    // const editLessonModal = document.getElementById('edit-lesson-modal');
+    // const btnEditLesson = document.getElementById('btn-edit-lesson');
 
-    const inputUpdatedTitle = document.getElementById('lesson-name');
+    // const inputUpdatedTitle = document.getElementById('lesson-name');
 
-    if (editLessonModal) {
-        editLessonModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
+    // if (editLessonModal) {
+    //     editLessonModal.addEventListener('show.bs.modal', function (event) {
+    //         const button = event.relatedTarget;
 
-            const slug = button.getAttribute('data-bs-id');
-            const indexLesson = button.getAttribute('index');
-            const currentTitle = button.getAttribute('current-title');
+    //         const slug = button.getAttribute('data-bs-id');
+    //         const indexLesson = button.getAttribute('index');
+    //         const currentTitle = button.getAttribute('current-title');
 
-            editLessonModal.addEventListener('hide.bs.modal', function (event) {
-                const updatedTitle = inputUpdatedTitle.getAttribute('value');
+    //         editLessonModal.addEventListener('hide.bs.modal', function (event) {
+    //             const updatedTitle = inputUpdatedTitle.getAttribute('value');
 
-                btnEditLesson.onclick = function () {
-                    console.log(slug);
-                    console.log(indexLesson);
-                    console.log('Current title: ', currentTitle);
-                    console.log('Updated title: ', updatedTitle);
+    //             btnEditLesson.onclick = function () {
+    //                 console.log(slug);
+    //                 console.log(indexLesson);
+    //                 console.log('Current title: ', currentTitle);
+    //                 console.log('Updated title: ', updatedTitle);
 
-                    handleEditLesson(slug, indexLesson, updatedTitle);
-                };
-            });
-        });
-    }
+    //                 handleEditLesson(slug, indexLesson, updatedTitle);
+    //             };
+    //         });
+    //     });
+    // }
 
     return (
         <div className="container-fluid">
@@ -504,7 +510,7 @@ export default function CourseForm() {
                     ))}
 
                     {/* Add new curriculum */}
-                    <div className="container">
+                    <div className="container mb-3">
                         <a onClick={handleAddSection} className="btn btn-light btn-sm">
                             Thêm chương mục
                         </a>
@@ -515,13 +521,13 @@ export default function CourseForm() {
                     </div>
 
                     {/* Popup Confirm Delete Curriculum Modal */}
-                    <CurriculumDeleteModal></CurriculumDeleteModal>
+                    <CurriculumDeleteModal handleDeleteCurriculum={handleDeleteCurriculum}></CurriculumDeleteModal>
 
                     {/* Popup Confirm Delete Lesson Modal */}
-                    <LessonDeleteModal></LessonDeleteModal>
+                    <LessonDeleteModal handleDeleteLesson={handleDeleteLesson}></LessonDeleteModal>
 
                     {/* Popup Edit Lesson Modal */}
-                    <LessonEditModal></LessonEditModal>
+                    <LessonEditModal handleEditLesson={handleEditLesson}></LessonEditModal>
 
                     {/* Popup Edit Curriculum Modal */}
                     <CurriculumEditModal handleEditCurriculum={handleEditCurriculum}></CurriculumEditModal>

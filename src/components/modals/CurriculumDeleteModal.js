@@ -1,4 +1,21 @@
-export default function CurriculumDeleteModal() {
+export default function CurriculumDeleteModal({ handleDeleteCurriculum }) {
+    // handle delete curriculum modal
+    const deleteCurriculumModal = document.getElementById('delete-curriculum-modal');
+    const btnDeleteCurriculum = document.getElementById('btn-delete-curriculum');
+
+    if (deleteCurriculumModal) {
+        deleteCurriculumModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+
+            const index = button.getAttribute('data-bs-id');
+
+            btnDeleteCurriculum.onclick = function () {
+                console.log(index);
+
+                handleDeleteCurriculum(index);
+            };
+        });
+    }
     return (
         <>
             {/* Popup Confirm Delete Curriculum Modal */}

@@ -3,34 +3,40 @@ import { useState } from 'react';
 export default function CurriculumEditModal({ handleEditCurriculum }) {
     const [title, setTitle] = useState('');
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const editCurriculumModal = document.getElementById('edit-curriculum-modal');
-        const btnEditCurriculum = document.getElementById('btn-edit-curriculum');
+    // handle edit curriculum modal
+    const editCurriculumModal = document.getElementById('edit-curriculum-modal');
+    const btnEditCurriculum = document.getElementById('btn-edit-curriculum');
 
-        const inputUpdatedCurriculumTitle = document.getElementById('curriculum-name');
-        console.log(editCurriculumModal);
-        if (editCurriculumModal) {
-            editCurriculumModal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
+    const inputUpdatedCurriculumTitle = document.getElementById('curriculum-name');
 
-                const index = button.getAttribute('data-bs-id');
+    console.log(editCurriculumModal);
+    console.log(btnEditCurriculum);
+    console.log(inputUpdatedCurriculumTitle);
 
-                const currentTitle = button.getAttribute('current-title');
+    if (editCurriculumModal) {
+        editCurriculumModal.addEventListener('show.bs.modal', function (event) {
+            console.log('here, modal event listened');
 
-                editCurriculumModal.addEventListener('hide.bs.modal', function (event) {
-                    const updatedTitle = inputUpdatedCurriculumTitle.getAttribute('value');
+            const button = event.relatedTarget;
+            console.log(button);
 
-                    btnEditCurriculum.onclick = function () {
-                        console.log(index);
-                        console.log('Current title: ', currentTitle);
-                        console.log('Updated title: ', updatedTitle);
+            const index = button.getAttribute('data-bs-id');
 
-                        handleEditCurriculum(index, updatedTitle);
-                    };
-                });
+            const currentTitle = button.getAttribute('current-title');
+
+            editCurriculumModal.addEventListener('hide.bs.modal', function (event) {
+                const updatedTitle = inputUpdatedCurriculumTitle.getAttribute('value');
+
+                btnEditCurriculum.onclick = function () {
+                    console.log(index);
+                    console.log('Current title: ', currentTitle);
+                    console.log('Updated title: ', updatedTitle);
+
+                    handleEditCurriculum(index, updatedTitle);
+                };
             });
-        }
-    });
+        });
+    }
 
     return (
         <>

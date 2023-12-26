@@ -1,7 +1,36 @@
 import { useState } from 'react';
 
-export default function LessonEditModal() {
+export default function LessonEditModal({ handleEditLesson }) {
     const [title, setTitle] = useState('');
+
+    // handle edit lesson modal
+    const editLessonModal = document.getElementById('edit-lesson-modal');
+    const btnEditLesson = document.getElementById('btn-edit-lesson');
+
+    const inputUpdatedTitle = document.getElementById('lesson-name');
+
+    if (editLessonModal) {
+        editLessonModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+
+            const slug = button.getAttribute('data-bs-id');
+            const indexLesson = button.getAttribute('index');
+            const currentTitle = button.getAttribute('current-title');
+
+            editLessonModal.addEventListener('hide.bs.modal', function (event) {
+                const updatedTitle = inputUpdatedTitle.getAttribute('value');
+
+                btnEditLesson.onclick = function () {
+                    console.log(slug);
+                    console.log(indexLesson);
+                    console.log('Current title: ', currentTitle);
+                    console.log('Updated title: ', updatedTitle);
+
+                    handleEditLesson(slug, indexLesson, updatedTitle);
+                };
+            });
+        });
+    }
 
     return (
         <>

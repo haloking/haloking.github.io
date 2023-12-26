@@ -1,4 +1,23 @@
-export default function LessonDeleteModal() {
+export default function LessonDeleteModal({ handleDeleteLesson }) {
+    // handle delete lesson modal
+    const deleteLessonModal = document.getElementById('delete-lesson-modal');
+    const btnDeleteLesson = document.getElementById('btn-delete-lesson');
+
+    if (deleteLessonModal) {
+        deleteLessonModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+
+            const slug = button.getAttribute('data-bs-id');
+            const indexLesson = button.getAttribute('index');
+
+            btnDeleteLesson.onclick = function () {
+                console.log(slug);
+                console.log(indexLesson);
+
+                handleDeleteLesson(slug, indexLesson);
+            };
+        });
+    }
     return (
         <>
             {/* Popup Confirm Delete Lesson Modal */}
