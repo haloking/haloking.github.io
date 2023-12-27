@@ -1070,7 +1070,7 @@ export default function Learning() {
                     {/* right column, the accordion */}
                     <div className="col-sm-3 default-top-margin" id="col-right">
                         <h5 className="mt-3">Nội dung</h5>
-                        <div className="accordion accordion-flush" id="accordionPanelsStayOpenExample">
+                        <div className="accordion accordion-flush" id="accordionExample">
                             {curriculums?.map((curriculum) => (
                                 <div className="accordion-item" key={curriculum._id}>
                                     <h2 className="accordion-header" id={`panelsStayOpen-heading-${curriculum.slug}`}>
@@ -1090,6 +1090,7 @@ export default function Learning() {
                                     <div
                                         id={`panelsStayOpen-collapse-${curriculum.slug}`}
                                         className="accordion-collapse collapse show"
+                                        data-bs-parent="#accordionExample"
                                         aria-labelledby={`panelsStayOpen-heading-${curriculum.title}`}
                                     >
                                         <div className="accordion-body">

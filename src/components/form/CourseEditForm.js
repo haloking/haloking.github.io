@@ -88,6 +88,8 @@ export default function CourseEditForm({ curriculums, setCurriculums, course, se
             newCurriculum.slug = slugify(`${newCurriculum.title}-${nanoid(6)}`, { lower: true });
 
             const newCurriculums = [...prev, newCurriculum];
+            console.log('updated curriculums:', newCurriculums);
+
             // save to local storage
             const jsonCurriculums = JSON.stringify(newCurriculums);
             localStorage.setItem('curriculums', jsonCurriculums);
@@ -128,6 +130,7 @@ export default function CourseEditForm({ curriculums, setCurriculums, course, se
         setCurriculums((prev) => {
             const newCurriculums = [...prev];
             newCurriculums.splice(index, 1);
+            console.log('updated curriculums:', newCurriculums);
 
             // save to local storage
             const jsonCurriculums = JSON.stringify(newCurriculums);
@@ -453,16 +456,16 @@ export default function CourseEditForm({ curriculums, setCurriculums, course, se
                     </div>
 
                     {/* Popup Confirm Delete Curriculum Modal */}
-                    <CurriculumDeleteModal></CurriculumDeleteModal>
+                    <CurriculumDeleteModal handleDeleteCurriculum={handleDeleteCurriculum}></CurriculumDeleteModal>
 
                     {/* Popup Confirm Delete Lesson Modal */}
-                    <LessonDeleteModal></LessonDeleteModal>
+                    <LessonDeleteModal handleDeleteLesson={handleDeleteLesson}></LessonDeleteModal>
 
                     {/* Popup Edit Lesson Modal */}
-                    <LessonEditModal></LessonEditModal>
+                    <LessonEditModal handleEditLesson={handleEditLesson}></LessonEditModal>
 
                     {/* Popup Edit Curriculum Modal */}
-                    <CurriculumEditModal></CurriculumEditModal>
+                    <CurriculumEditModal handleEditCurriculum={handleEditCurriculum}></CurriculumEditModal>
                 </div>
 
                 {/* <pre>{JSON.stringify(course, null, 4)}</pre> */}

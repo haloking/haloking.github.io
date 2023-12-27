@@ -9,16 +9,16 @@ export default function CurriculumEditModal({ handleEditCurriculum }) {
 
     const inputUpdatedCurriculumTitle = document.getElementById('curriculum-name');
 
-    console.log(editCurriculumModal);
-    console.log(btnEditCurriculum);
-    console.log(inputUpdatedCurriculumTitle);
+    // console.log(editCurriculumModal);
+    // console.log(btnEditCurriculum);
+    // console.log(inputUpdatedCurriculumTitle);
 
     if (editCurriculumModal) {
         editCurriculumModal.addEventListener('show.bs.modal', function (event) {
             console.log('here, modal event listened');
 
             const button = event.relatedTarget;
-            console.log(button);
+            // console.log(button);
 
             const index = button.getAttribute('data-bs-id');
 
