@@ -170,7 +170,6 @@ export default function Learning() {
         // console.log(lessonId);
         try {
             const { data } = await axios.get(`/course/lesson/${lessonId}`);
-            setAudio(data.lesson.audio);
             const tempTapescript = data?.tapescript?.tapescript;
 
             if (tempTapescript) {
@@ -339,8 +338,10 @@ export default function Learning() {
                 const conjunctionList = ['and', `but`, `also`, `or`, `however`, `although`, `though`, `because`];
 
                 // assign the timeEnd of the last text in tapescript
-                tempTapescript[tempTapescript.length - 1].timeEnd = playerRef.current?.getDuration() * 1000;
-                console.log('Total duration:', playerRef.current?.getDuration() * 1000);
+                // tempTapescript[tempTapescript.length - 1].timeEnd = playerRef.current?.getDuration() * 1000;
+                tempTapescript[tempTapescript.length - 1].timeEnd = Math.floor(data.lesson.audioDuration * 1000);
+
+                console.log('Total duration:', Math.floor(data.lesson.audioDuration * 1000));
                 tempTapescript?.map((text, index) => {
                     // assign timeEnd of text in tapescript
                     if (index > 0) {
@@ -501,7 +502,7 @@ export default function Learning() {
 
                     const averageTimeOfCharactor = Math.floor((text.timeEnd - text.timeStart) / str.length);
                     console.log(averageTimeOfCharactor);
-                    const delayTime = 1 * averageTimeOfCharactor;
+                    const delayTime = 0 * averageTimeOfCharactor;
 
                     text.seperatedText?.map((word, index) => {
                         if (index === 0) {
@@ -532,6 +533,7 @@ export default function Learning() {
                 console.log('tapescript:', tempTapescript);
 
                 // initialization
+                setAudio(data.lesson.audio);
                 playerRef.current?.seekTo(tempTapescript[0].timeStart / 1000, 'seconds');
                 setCurrentTime(0);
                 setPlaying(false);

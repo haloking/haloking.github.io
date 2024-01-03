@@ -11,6 +11,21 @@ export default function FileAudioUpload({
     curriculumSlug,
     indexLesson,
 }) {
+    async function getDuration(file) {
+        const url = URL.createObjectURL(file);
+
+        return new Promise((resolve) => {
+            const audio = document.createElement('audio');
+            audio.muted = true;
+            const source = document.createElement('source');
+            source.src = url; //--> blob URL
+            audio.preload = 'metadata';
+            audio.appendChild(source);
+            audio.onloadedmetadata = function () {
+                resolve(audio.duration);
+            };
+        });
+    }
     const handleUpload = async (e) => {
         // get the selected file from the input
         const file = e.target.files[0];
@@ -32,10 +47,14 @@ export default function FileAudioUpload({
 
             await axios
                 .post('/upload-file-audio', formData, config)
-                .then(({ data }) => {
+                .then(async ({ data }) => {
                     // handle the response, data contains url of the file
                     console.log(data);
                     console.log('url:', data.Location);
+
+                    // get audio duration in seconds
+                    const duration = await getDuration(file);
+                    console.log('Audio duration:', duration);
 
                     setCurriculums((prev) => {
                         // get position of the clicked curriculum based on the slug of the curriculum
@@ -44,6 +63,8 @@ export default function FileAudioUpload({
                         // put url of audio file to lesson
                         const newCurriculums = [...prev];
                         newCurriculums[index].lessons[indexLesson].audio = data.Location;
+                        // put audioDuration to lesson
+                        newCurriculums[index].lessons[indexLesson].audioDuration = duration;
 
                         // save to local storage
                         const jsonCurriculums = JSON.stringify(newCurriculums);
