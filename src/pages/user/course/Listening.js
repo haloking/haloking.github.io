@@ -133,6 +133,8 @@ export default function Learning() {
             // console.log(text);
             setTimeStart(text.timeStart);
             setTimeEnd(text.timeEnd);
+            console.log(text.timeStart);
+            console.log(text.timeEnd);
             playerRef.current?.seekTo(text.timeStart / 1000, 'seconds');
             play();
         } catch (err) {
@@ -168,12 +170,177 @@ export default function Learning() {
         // console.log(lessonId);
         try {
             const { data } = await axios.get(`/course/lesson/${lessonId}`);
+            setAudio(data.lesson.audio);
             const tempTapescript = data?.tapescript?.tapescript;
-            console.log('tapescript:', tempTapescript);
 
-            // assign the timeEnd of the last text in tapescript
             if (tempTapescript) {
+                const nameList = [`Lydia`, `Stevenson`, `Korpis`];
+                const exceptList = [` `, `'s`];
+                const punctuationList = [`.`, `,`, `!`, `?`, `:`, `;`, `'`];
+                const articleList = [`a`, `an`, `the`];
+                const prepositionList = [
+                    `about`,
+                    `above`,
+                    `across`,
+                    `after`,
+                    `against`,
+                    `as`,
+                    `at`,
+                    `before`,
+                    `but`,
+                    `by`,
+                    `in`,
+                    `into`,
+                    `inside`,
+                    `of`,
+                    `off`,
+                    `on`,
+                    `onto`,
+                    `over`,
+                    `to`,
+                    `under`,
+                    `up`,
+                    `with`,
+                    `for`,
+                ];
+                const commonWordsList = [
+                    `be`,
+                    `being`,
+                    `am`,
+                    `is`,
+                    `are`,
+                    `has`,
+                    `have`,
+                    `having`,
+                    `do`,
+                    `doing`,
+                    `did`,
+                    `i`,
+                    `you`,
+                    `he`,
+                    `she`,
+                    `they`,
+                    `it`,
+                    `this`,
+                    `that`,
+                    `him`,
+                    `her`,
+                    `me`,
+                    `them`,
+                    `my`,
+                    `our`,
+                    `your`,
+                    `his`,
+                    `her`,
+                    `their`,
+                    `its`,
+                    `myself`,
+                    `yourself`,
+                    `itself`,
+                    `themselves`,
+                    `himself`,
+                    `herself`,
+                    `these`,
+                    `those`,
+                    `here`,
+                    `there`,
+                    `some`,
+                    `any`,
+                    `who`,
+                    `whom`,
+                    `what`,
+                    `which`,
+                    `when`,
+                    `where`,
+                    `how`,
+                    `yes`,
+                    `no`,
+                    `not`,
+                    `yeah`,
+                    `all`,
+                    `so`,
+                    `and`,
+                    `hello`,
+                    `oh`,
+                    `well`,
+                    `too`,
+                    `can`,
+                    `could`,
+                    `will`,
+                    `would`,
+                    `now`,
+                    `then`,
+                    `if`,
+                    `although`,
+                    `bit`,
+                    `very`,
+                    `last`,
+                    `other`,
+                    `neither`,
+                    `today`,
+                    `tomorrow`,
+                    `yesterday`,
+                    `week`,
+                    `month`,
+                    `year`,
+                    `set`,
+                    `setting`,
+                    `take`,
+                    `taking`,
+                    `will`,
+                    `would`,
+                    `can`,
+                    `could`,
+                    `go`,
+                    `going`,
+                    `look`,
+                    `looking`,
+                    `want`,
+                    `need`,
+                    `doesn't`,
+                    `didn't`,
+                    `i'm`,
+                    `you're`,
+                    `they're`,
+                    `he's`,
+                    `she's`,
+                    `it's`,
+                    `like`,
+                    `talk`,
+                    `talking`,
+                    `same`,
+                    `more`,
+                    `much`,
+                    `little`,
+                    `people`,
+                    `one`,
+                    `two`,
+                    `three`,
+                    `four`,
+                    `five`,
+                    `six`,
+                    `seven`,
+                    `eight`,
+                    `nine`,
+                    `ten`,
+                    `first`,
+                    `just`,
+                    `dr`,
+                    `mr`,
+                    `ms`,
+                    `mrs`,
+                    `only`,
+                    `lot`,
+                    `each`,
+                    `everyone`,
+                    `everybody`,
+                    `than`,
+                ];
+                const conjunctionList = ['and', `but`, `also`, `or`, `however`, `although`, `though`, `because`];
+
+                // assign the timeEnd of the last text in tapescript
                 tempTapescript[tempTapescript.length - 1].timeEnd = playerRef.current?.getDuration() * 1000;
+                console.log('Total duration:', playerRef.current?.getDuration() * 1000);
                 tempTapescript?.map((text, index) => {
                     // assign timeEnd of text in tapescript
                     if (index > 0) {
@@ -181,176 +348,12 @@ export default function Learning() {
                         tempTapescript[index - 1].timeEnd = timeEnd;
                     }
 
-                    // generate data htmlFor dictation
+                    // generate data for dictation
                     const keywords = [];
                     const keywordsIndex = [];
                     const easyDictationIndex = [];
                     const mediumDictationIndex = [];
                     const difficultDictationIndex = [];
-
-                    const nameList = [`Lydia`, `Stevenson`, `Korpis`];
-                    const exceptList = [` `, `'s`];
-                    const punctuationList = [`.`, `,`, `!`, `?`, `:`, `;`, `'`];
-                    const articleList = [`a`, `an`, `the`];
-                    const prepositionList = [
-                        `about`,
-                        `above`,
-                        `across`,
-                        `after`,
-                        `against`,
-                        `as`,
-                        `at`,
-                        `before`,
-                        `but`,
-                        `by`,
-                        `in`,
-                        `into`,
-                        `inside`,
-                        `of`,
-                        `off`,
-                        `on`,
-                        `onto`,
-                        `over`,
-                        `to`,
-                        `under`,
-                        `up`,
-                        `with`,
-                        `for`,
-                    ];
-                    const commonWordsList = [
-                        `be`,
-                        `being`,
-                        `am`,
-                        `is`,
-                        `are`,
-                        `has`,
-                        `have`,
-                        `having`,
-                        `do`,
-                        `doing`,
-                        `did`,
-                        `i`,
-                        `you`,
-                        `he`,
-                        `she`,
-                        `they`,
-                        `it`,
-                        `this`,
-                        `that`,
-                        `him`,
-                        `her`,
-                        `me`,
-                        `them`,
-                        `my`,
-                        `our`,
-                        `your`,
-                        `his`,
-                        `her`,
-                        `their`,
-                        `its`,
-                        `myself`,
-                        `yourself`,
-                        `itself`,
-                        `themselves`,
-                        `himself`,
-                        `herself`,
-                        `these`,
-                        `those`,
-                        `here`,
-                        `there`,
-                        `some`,
-                        `any`,
-                        `who`,
-                        `whom`,
-                        `what`,
-                        `which`,
-                        `when`,
-                        `where`,
-                        `how`,
-                        `yes`,
-                        `no`,
-                        `not`,
-                        `yeah`,
-                        `all`,
-                        `so`,
-                        `and`,
-                        `hello`,
-                        `oh`,
-                        `well`,
-                        `too`,
-                        `can`,
-                        `could`,
-                        `will`,
-                        `would`,
-                        `now`,
-                        `then`,
-                        `if`,
-                        `although`,
-                        `bit`,
-                        `very`,
-                        `last`,
-                        `other`,
-                        `neither`,
-                        `today`,
-                        `tomorrow`,
-                        `yesterday`,
-                        `week`,
-                        `month`,
-                        `year`,
-                        `set`,
-                        `setting`,
-                        `take`,
-                        `taking`,
-                        `will`,
-                        `would`,
-                        `can`,
-                        `could`,
-                        `go`,
-                        `going`,
-                        `look`,
-                        `looking`,
-                        `want`,
-                        `need`,
-                        `doesn't`,
-                        `didn't`,
-                        `i'm`,
-                        `you're`,
-                        `they're`,
-                        `he's`,
-                        `she's`,
-                        `it's`,
-                        `like`,
-                        `talk`,
-                        `talking`,
-                        `same`,
-                        `more`,
-                        `much`,
-                        `little`,
-                        `people`,
-                        `one`,
-                        `two`,
-                        `three`,
-                        `four`,
-                        `five`,
-                        `six`,
-                        `seven`,
-                        `eight`,
-                        `nine`,
-                        `ten`,
-                        `first`,
-                        `just`,
-                        `dr`,
-                        `mr`,
-                        `ms`,
-                        `mrs`,
-                        `only`,
-                        `lot`,
-                        `each`,
-                        `everyone`,
-                        `everybody`,
-                        `than`,
-                    ];
-                    const conjunctionList = ['and', `but`, `also`, `or`, `however`, `although`, `though`, `because`];
 
                     const str = text.english
                         .replaceAll(',', '*#*,')
@@ -361,7 +364,7 @@ export default function Learning() {
                         .replaceAll(' ', '*#* *#*');
                     // console.log(str);
                     let seperatedText = str.split('*#*');
-                    // console.log(seperatedText);
+                    console.log(seperatedText);
 
                     tempTapescript[index].seperatedText = seperatedText;
 
@@ -471,6 +474,63 @@ export default function Learning() {
                             break;
                     }
                 });
+
+                // generate time of each word in seperatedText
+                tempTapescript?.map((text, index) => {
+                    console.log(text.timeStart);
+                    console.log(text.timeEnd);
+                    console.log(text.seperatedText.length);
+                    const str = text.english
+                        .replaceAll(',', '')
+                        .replaceAll('.', '')
+                        .replaceAll('!', '')
+                        .replaceAll('?', '')
+                        .replaceAll(' ', '');
+
+                    // const averageTimeOfWord = Math.floor(
+                    //     (parseInt(text.timeEnd) - parseInt(text.timeStart)) / parseInt(text.seperatedText.length),
+                    // );
+                    // console.log(averageTimeOfWord);
+
+                    const timeStartSeperatedText = [];
+                    const timeEndSeperatedText = [];
+                    // for (let i = 0; i < text.seperatedText.length; i++) {
+                    //     timeStartSeperatedText.push(parseInt(text.timeStart) + i * averageTimeOfWord);
+                    //     timeEndSeperatedText.push(timeStartSeperatedText[i] + averageTimeOfWord);
+                    // }
+
+                    const averageTimeOfCharactor = Math.floor((text.timeEnd - text.timeStart) / str.length);
+                    console.log(averageTimeOfCharactor);
+                    const delayTime = 1 * averageTimeOfCharactor;
+
+                    text.seperatedText?.map((word, index) => {
+                        if (index === 0) {
+                            timeStartSeperatedText.push(text.timeStart - delayTime);
+                            timeEndSeperatedText.push(
+                                timeStartSeperatedText[index] + word.length * averageTimeOfCharactor,
+                            );
+                        } else {
+                            const lowerCaseWord = word.toLowerCase();
+                            if (!exceptList.includes(lowerCaseWord) && !punctuationList.includes(lowerCaseWord)) {
+                                timeStartSeperatedText.push(timeEndSeperatedText[index - 1]);
+                                timeEndSeperatedText.push(
+                                    timeStartSeperatedText[index] + word.length * averageTimeOfCharactor,
+                                );
+                            } else {
+                                timeStartSeperatedText.push(timeEndSeperatedText[index - 1]);
+                                timeEndSeperatedText.push(timeStartSeperatedText[index]);
+                            }
+                        }
+                    });
+
+                    console.log(timeStartSeperatedText);
+                    console.log(timeEndSeperatedText);
+                    tempTapescript[index].timeStartSeperatedText = timeStartSeperatedText;
+                    tempTapescript[index].timeEndSeperatedText = timeEndSeperatedText;
+                });
+
+                console.log('tapescript:', tempTapescript);
+
                 // initialization
                 playerRef.current?.seekTo(tempTapescript[0].timeStart / 1000, 'seconds');
                 setCurrentTime(0);
@@ -488,7 +548,6 @@ export default function Learning() {
                 setAnswer5('');
 
                 setTapescript(tempTapescript);
-                setAudio(data.lesson.audio);
 
                 setIsLessonSelected(true);
             } else {
@@ -766,7 +825,7 @@ export default function Learning() {
                                 </label>
                             </div>
 
-                            {/* <h2>current time playing: {currentTime} second.</h2> */}
+                            <h2>current time playing: {currentTime} second.</h2>
 
                             {isDictating ? (
                                 <>
@@ -1022,6 +1081,48 @@ export default function Learning() {
                                 // listening with tapescript UI
                                 <div>
                                     {tapescript?.map((text, index) => (
+                                        <div className="mb-3 ms-3" key={index}>
+                                            {text.seperatedText?.map((word, i) => (
+                                                <span
+                                                    style={{
+                                                        color:
+                                                            currentTime > text.timeStartSeperatedText[i] / 1000 &&
+                                                            currentTime < text.timeEndSeperatedText[i] / 1000
+                                                                ? ''
+                                                                : '',
+                                                        border:
+                                                            currentTime > text.timeStartSeperatedText[i] / 1000 &&
+                                                            currentTime < text.timeEndSeperatedText[i] / 1000
+                                                                ? '2px solid Tomato'
+                                                                : '',
+                                                    }}
+                                                    key={i}
+                                                >
+                                                    {word}
+                                                </span>
+                                            ))}
+                                            <br></br>
+                                            {isVietnamese ? (
+                                                <span
+                                                    onClick={(e) => handleClickSentence(e, text)}
+                                                    className="text-button-subtitle"
+                                                    style={{
+                                                        color:
+                                                            currentTime > text.timeStart / 1000 &&
+                                                            currentTime < text.timeEnd / 1000
+                                                                ? 'SlateBlue'
+                                                                : '',
+                                                    }}
+                                                >
+                                                    {text.vietnamese}
+                                                </span>
+                                            ) : (
+                                                <></>
+                                            )}
+                                        </div>
+                                    ))}
+
+                                    {/* {tapescript?.map((text, index) => (
                                         <div className="mb-3" key={index}>
                                             <span
                                                 onClick={(e) => handleClickSentence(e, text)}
@@ -1045,7 +1146,7 @@ export default function Learning() {
                                                         color:
                                                             currentTime > text.timeStart / 1000 &&
                                                             currentTime < text.timeEnd / 1000
-                                                                ? 'blue'
+                                                                ? 'green'
                                                                 : '',
                                                     }}
                                                 >
@@ -1057,7 +1158,7 @@ export default function Learning() {
 
                                             <br></br>
                                         </div>
-                                    ))}
+                                    ))} */}
                                 </div>
                             )}
                         </div>
@@ -1075,11 +1176,11 @@ export default function Learning() {
                                 <div className="accordion-item" key={curriculum._id}>
                                     <h2 className="accordion-header" id={`panelsStayOpen-heading-${curriculum.slug}`}>
                                         <button
-                                            className="accordion-button"
+                                            className="accordion-button collapsed"
                                             type="button"
                                             data-bs-toggle="collapse"
                                             data-bs-target={`#panelsStayOpen-collapse-${curriculum.slug}`}
-                                            aria-expanded="true"
+                                            aria-expanded="false"
                                             aria-controls={`panelsStayOpen-collapse-${curriculum.slug}`}
                                         >
                                             {curriculum.title}
@@ -1089,7 +1190,7 @@ export default function Learning() {
                                     </h2>
                                     <div
                                         id={`panelsStayOpen-collapse-${curriculum.slug}`}
-                                        className="accordion-collapse collapse show"
+                                        className="accordion-collapse collapse"
                                         data-bs-parent="#accordionExample"
                                         aria-labelledby={`panelsStayOpen-heading-${curriculum.title}`}
                                     >
