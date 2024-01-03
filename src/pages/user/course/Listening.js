@@ -1086,6 +1086,7 @@ export default function Learning() {
                                         <div className="mb-3 ms-3" key={index}>
                                             {text.seperatedText?.map((word, i) => (
                                                 <span
+                                                    onClick={(e) => handleClickSentence(e, text)}
                                                     style={{
                                                         color:
                                                             currentTime > text.timeStartSeperatedText[i] / 1000 &&
