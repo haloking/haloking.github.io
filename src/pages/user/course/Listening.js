@@ -1,10 +1,13 @@
+import './Listening.scss';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/auth';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import ReactPlayer from 'react-player';
+import $ from 'jquery';
 
 // import sound from '../../../assets/audio/audiotest.mp3';
 // import { tapeScript } from '../../../helpers/tapeScript';
@@ -59,8 +62,13 @@ export default function Learning() {
     let correctAnswer4 = '';
     let correctAnswer5 = '';
 
+    // useRef
     // player
     const playerRef = useRef(null);
+
+    // accordion
+    const accItemsRefs = useRef([]);
+    const accRef = useRef();
 
     // hooks
     const params = useParams();
@@ -96,8 +104,8 @@ export default function Learning() {
 
     useEffect(() => {
         if (isDictating) {
-            console.log(timeStart);
-            console.log(timeEnd);
+            // console.log(timeStart);
+            // console.log(timeEnd);
             if (currentTime >= timeEnd / 1000) {
                 playerRef.current?.seekTo(timeStart / 1000, 'seconds');
                 pause();
@@ -127,6 +135,52 @@ export default function Learning() {
         }, 100);
         return () => clearInterval(interval);
     }, [currentTime]);
+
+    // active accordion item scrolls to top
+    useEffect(() => {
+        // console.log(accItemsRefs.current);
+        // console.log(accRef.current);
+
+        const accordionItems = accItemsRefs.current;
+        const acc = accRef.current;
+
+        accordionItems.forEach((el) => {
+            // console.log(el);
+            el.addEventListener('shown.bs.collapse', (e) => {
+                const rect = el.getBoundingClientRect();
+                console.log(rect);
+                console.log(acc.scrollTop);
+                console.log(el.parentNode.offsetTop);
+
+                var scrollOffset = acc.scrollTop + el.parentNode.offsetTop;
+                console.log(scrollOffset);
+
+                window.scroll({
+                    top: scrollOffset,
+                    left: 0,
+                    behavior: 'smooth',
+                });
+            });
+        });
+    }, [curriculums]);
+
+    // useEffect(() => {
+    //     // js for active accordion item going to top
+    //     const accordionItems = document.querySelectorAll('.accordion-collapse');
+    //     const acc = document.getElementById('accordionExample');
+    //     // const accordionItems = acc.querySelectorAll('.collapse');
+
+    //     accordionItems.forEach((el) => {
+    //         el.addEventListener('shown.bs.collapse', (e) => {
+    //             var scrollOffset = acc.scrollTop + el.parentNode.offsetTop;
+    //             window.scroll({
+    //                 top: scrollOffset,
+    //                 left: 0,
+    //                 behavior: 'smooth',
+    //             });
+    //         });
+    //     });
+    // }, [curriculums]);
 
     const handleClickSentence = (e, text) => {
         try {
@@ -168,6 +222,24 @@ export default function Learning() {
     const handleClickLesson = async (e, lessonId) => {
         e.preventDefault();
         // console.log(lessonId);
+
+        // const accordionItems = document.querySelectorAll('.accordion-collapse');
+        // const acc = document.getElementById('accordionExample');
+        // // const accordionItems = acc.querySelectorAll('.collapse');
+        // console.log(accordionItems);
+        // console.log(acc);
+
+        // accordionItems.forEach((el) => {
+        //     el.addEventListener('shown.bs.collapse', (e) => {
+        //         var scrollOffset = acc.scrollTop + el.parentNode.offsetTop;
+        //         window.scroll({
+        //             top: scrollOffset,
+        //             left: 0,
+        //             behavior: 'smooth',
+        //         });
+        //     });
+        // });
+
         try {
             const { data } = await axios.get(`/course/lesson/${lessonId}`);
             const tempTapescript = data?.tapescript?.tapescript;
@@ -341,7 +413,7 @@ export default function Learning() {
                 // tempTapescript[tempTapescript.length - 1].timeEnd = playerRef.current?.getDuration() * 1000;
                 tempTapescript[tempTapescript.length - 1].timeEnd = Math.floor(data.lesson.audioDuration * 1000);
 
-                console.log('Total duration:', Math.floor(data.lesson.audioDuration * 1000));
+                // console.log('Total duration:', Math.floor(data.lesson.audioDuration * 1000));
                 tempTapescript?.map((text, index) => {
                     // assign timeEnd of text in tapescript
                     if (index > 0) {
@@ -365,7 +437,7 @@ export default function Learning() {
                         .replaceAll(' ', '*#* *#*');
                     // console.log(str);
                     let seperatedText = str.split('*#*');
-                    console.log(seperatedText);
+                    // console.log(seperatedText);
 
                     tempTapescript[index].seperatedText = seperatedText;
 
@@ -478,9 +550,9 @@ export default function Learning() {
 
                 // generate time of each word in seperatedText
                 tempTapescript?.map((text, index) => {
-                    console.log(text.timeStart);
-                    console.log(text.timeEnd);
-                    console.log(text.seperatedText.length);
+                    // console.log(text.timeStart);
+                    // console.log(text.timeEnd);
+                    // console.log(text.seperatedText.length);
                     const str = text.english
                         .replaceAll(',', '')
                         .replaceAll('.', '')
@@ -501,7 +573,7 @@ export default function Learning() {
                     // }
 
                     const averageTimeOfCharactor = Math.floor((text.timeEnd - text.timeStart) / str.length);
-                    console.log(averageTimeOfCharactor);
+                    // console.log(averageTimeOfCharactor);
                     const delayTime = 0 * averageTimeOfCharactor;
 
                     text.seperatedText?.map((word, index) => {
@@ -524,8 +596,8 @@ export default function Learning() {
                         }
                     });
 
-                    console.log(timeStartSeperatedText);
-                    console.log(timeEndSeperatedText);
+                    // console.log(timeStartSeperatedText);
+                    // console.log(timeEndSeperatedText);
                     tempTapescript[index].timeStartSeperatedText = timeStartSeperatedText;
                     tempTapescript[index].timeEndSeperatedText = timeEndSeperatedText;
                 });
@@ -727,7 +799,7 @@ export default function Learning() {
                     {isLessonSelected ? (
                         <div className="col-sm-9 default-top-margin" id="col-left">
                             {/* navbar when learning */}
-                            <nav className="navbar navbar-expand-lg navbar-light bg-light ">
+                            {/* <nav className="navbar navbar-expand-lg navbar-light bg-light ">
                                 <div className="container-fluid">
                                     <a className="navbar-brand" href="/">
                                         EEE
@@ -761,26 +833,37 @@ export default function Learning() {
                                         </div>
                                     </div>
                                 </div>
-                            </nav>
+                            </nav> */}
 
-                            {isDictating ? (
-                                <h3 className="mt-3 mb-3">Luyện nghe chép chính tả</h3>
-                            ) : (
-                                <h3 className="mt-3 mb-3">Luyện nghe có lời thoại</h3>
-                            )}
-
-                            <ReactPlayer
-                                url={audio}
-                                ref={playerRef}
-                                width="400px"
-                                height="50px"
-                                controls={true}
-                                playing={playing}
-                                onPlay={play}
-                                onPause={pause}
-                            />
-
-                            {/* <ReactPlayer
+                            <div className="">
+                                <button
+                                    onClick={handleShowDictation}
+                                    className="btn btn-secondary rounded-pill text-light"
+                                >
+                                    Nghe chép chính tả
+                                </button>{' '}
+                                <button
+                                    onClick={handleShowTapescript}
+                                    className="btn btn-secondary rounded-pill text-light"
+                                >
+                                    Nghe có lời thoại
+                                </button>
+                                {isDictating ? (
+                                    <h3 className="text-secondary mt-3 mb-3">Luyện nghe chép chính tả</h3>
+                                ) : (
+                                    <h3 className="text-secondary mt-3 mb-3">Luyện nghe có lời thoại</h3>
+                                )}
+                                <ReactPlayer
+                                    url={audio}
+                                    ref={playerRef}
+                                    width="400px"
+                                    height="50px"
+                                    controls={true}
+                                    playing={playing}
+                                    onPlay={play}
+                                    onPause={pause}
+                                />
+                                {/* <ReactPlayer
                                 url="https://www.computerhope.com/jargon/m/example.mp3"
                                 ref={playerRef}
                                 width="400px"
@@ -790,8 +873,7 @@ export default function Learning() {
                                 onPlay={play}
                                 onPause={pause}
                             /> */}
-
-                            {/* <ReactPlayer
+                                {/* <ReactPlayer
                                 url={sound}
                                 ref={playerRef}
                                 width="400px"
@@ -801,33 +883,33 @@ export default function Learning() {
                                 onPlay={play}
                                 onPause={pause}
                             /> */}
-                            <div className="form-check form-switch mt-3 mb-3 ms-3">
-                                <input
-                                    onChange={handleRepeat}
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    id="flexSwitchCheckDefault"
-                                    checked={isRepeatedOn}
-                                ></input>
-                                <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                                    Repeat
-                                </label>
+                                <div className="form-check form-switch mt-3 mb-3 ms-3">
+                                    <input
+                                        onChange={handleRepeat}
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id="flexSwitchCheckDefault"
+                                        checked={isRepeatedOn}
+                                    ></input>
+                                    <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
+                                        Repeat
+                                    </label>
+                                </div>
+                                <div className="form-check form-switch mt-3 mb-3 ms-3">
+                                    <input
+                                        onChange={handleVietnameseSubtitle}
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id="flexSwitchCheckVietnameseSubtitle"
+                                        checked={isVietnamese}
+                                    ></input>
+                                    <label className="form-check-label" htmlFor="flexSwitchCheckVietnameseSubtitle">
+                                        Vietnamese
+                                    </label>
+                                </div>
                             </div>
 
-                            <div className="form-check form-switch mt-3 mb-3 ms-3">
-                                <input
-                                    onChange={handleVietnameseSubtitle}
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    id="flexSwitchCheckVietnameseSubtitle"
-                                    checked={isVietnamese}
-                                ></input>
-                                <label className="form-check-label" htmlFor="flexSwitchCheckVietnameseSubtitle">
-                                    Vietnamese
-                                </label>
-                            </div>
-
-                            <h2>current time playing: {currentTime} second.</h2>
+                            {/* <h2>current time playing: {currentTime} second.</h2> */}
 
                             {isDictating ? (
                                 <>
@@ -851,39 +933,43 @@ export default function Learning() {
                                         <button
                                             onClick={handlePrevious}
                                             type="button"
-                                            className="btn btn-primary btn-sm"
+                                            className="btn btn-secondary rounded-pill btn-sm"
                                         >
                                             Câu trước
-                                        </button>
+                                        </button>{' '}
                                         <button
                                             onClick={handleListenAgain}
                                             type="button"
-                                            className="btn btn-primary btn-sm"
+                                            className="btn btn-secondary rounded-pill btn-sm"
                                         >
                                             Nghe lại
-                                        </button>
+                                        </button>{' '}
                                         {/* <button
                                         onClick={handleCheckAnswer}
                                         type="button"
-                                        className="btn btn-primary btn-sm"
+                                        className="btn btn-secondary rounded-pill btn-sm"
                                     >
                                         Kiểm tra
                                     </button> */}
                                         <button
                                             onClick={handleShowCorrectAnswer}
                                             type="button"
-                                            className="btn btn-primary btn-sm"
+                                            className="btn btn-secondary rounded-pill btn-sm"
                                         >
                                             Đáp án
-                                        </button>
+                                        </button>{' '}
                                         <button
                                             onClick={handleClearAnswer}
                                             type="button"
-                                            className="btn btn-primary btn-sm"
+                                            className="btn btn-secondary rounded-pill btn-sm"
                                         >
                                             Xóa
-                                        </button>
-                                        <button onClick={handleNext} type="button" className="btn btn-primary btn-sm">
+                                        </button>{' '}
+                                        <button
+                                            onClick={handleNext}
+                                            type="button"
+                                            className="btn btn-secondary rounded-pill btn-sm"
+                                        >
                                             Câu sau
                                         </button>
                                     </div>
@@ -1167,15 +1253,15 @@ export default function Learning() {
                         </div>
                     ) : (
                         <div className="col-sm-9 default-top-margin" id="col-left">
-                            <h1 className="display-1 bg-primary text-light p-5">{course.title}</h1>
+                            <h1 className="display-1 bg-secondary text-light p-5">{course.title}</h1>
                         </div>
                     )}
 
                     {/* right column, the accordion */}
                     <div className="col-sm-3 default-top-margin" id="col-right">
                         <h5 className="mt-3">Nội dung</h5>
-                        <div className="accordion accordion-flush" id="accordionExample">
-                            {curriculums?.map((curriculum) => (
+                        <div ref={accRef} className="accordion accordion-flush" id="accordionExample">
+                            {curriculums?.map((curriculum, index) => (
                                 <div className="accordion-item" key={curriculum._id}>
                                     <h2 className="accordion-header" id={`panelsStayOpen-heading-${curriculum.slug}`}>
                                         <button
@@ -1192,6 +1278,7 @@ export default function Learning() {
                                         </button>
                                     </h2>
                                     <div
+                                        ref={(el) => (accItemsRefs.current[index] = el)}
                                         id={`panelsStayOpen-collapse-${curriculum.slug}`}
                                         className="accordion-collapse collapse"
                                         data-bs-parent="#accordionExample"

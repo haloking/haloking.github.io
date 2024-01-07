@@ -44,7 +44,7 @@ export default function Login() {
 
     return (
         <div>
-            <h1 className="display-1 bg-primary text-light p-5 default-top-margin">Login</h1>
+            <h1 className="display-1 bg-secondary text-light p-5 default-top-margin">Đăng nhập</h1>
 
             <div className="container">
                 <div className="row">
@@ -52,7 +52,7 @@ export default function Login() {
                         <form onSubmit={handleSubmit}>
                             <input
                                 type="email"
-                                placeholder="Enter your email"
+                                placeholder="Nhập địa chỉ email"
                                 className="form-control mb-4"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value.toLowerCase())}
@@ -62,24 +62,24 @@ export default function Login() {
 
                             <input
                                 type="password"
-                                placeholder="Enter your password"
+                                placeholder="Nhập mật khẩu"
                                 className="form-control mb-4"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
 
-                            <button className="btn btn-primary col-12 mb-4" disabled={loading}>
-                                {loading ? 'Waiting...' : 'Login'}
+                            <button className="btn btn-outline-secondary rounded-pill col-12 mb-4" disabled={loading}>
+                                {loading ? 'Vui lòng chờ...' : 'Đăng nhập'}
                             </button>
                         </form>
 
                         <div className="d-flex justify-content-between">
-                            <Link to="/auth/forgot-password" className="text-danger">
-                                Forgot Password?
+                            <Link to="/auth/forgot-password" style={{ textDecoration: 'none' }} className="text-danger">
+                                Mật khẩu?
                             </Link>
-                            <Link to="/register" className="text-danger pointer">
-                                Register now
+                            <Link to="/register" style={{ textDecoration: 'none' }} className="text-danger pointer">
+                                Đăng ký
                             </Link>
                         </div>
                     </div>

@@ -1,0 +1,40 @@
+// reset css
+@import 'normalize.css';
+
+$primary: #413ada;
+$secondary: #f47a62;
+
+$headings-font-family: Roboto;
+
+// change height of brand -> change height of navbar
+$navbar-brand-padding-y: 1rem;
+
+$navbar-brand-font-size: 1.5rem;
+
+/* import bootstrap to set changes */
+@import '~bootstrap/scss/bootstrap';
+// @import '../../../node_modules/bootstrap/scss/bootstrap';
+
+/* avoid fixed top nav-bar from hiding content */
+.default-top-margin {
+    margin-top: 100px;
+}
+
+.heading-h1 {
+    // 64px
+    // font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
+    font-size: 4rem;
+}
+
+.heading-h2 {
+    // 54px
+    // font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
+    font-size: 3.375rem;
+}
+
+.btn-custom {
+    padding: 10px 40px !important;
+    font-size: 1.2rem !important;
+}

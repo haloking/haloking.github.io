@@ -29,8 +29,12 @@ export default function CourseView() {
 
     return (
         <>
-            <h1 className="default-top-margin display-1 bg-primary text-light p-5">{course.title} Landing Page</h1>
-            <a href={`/learning/listening/${params?.slug}`}>Vào học bây giờ</a>
+            <h1 className="default-top-margin display-1 bg-secondary text-light p-5">{course.title}</h1>
+            <div className="container-fluid">
+                <a className="btn btn-outline-secondary rounded-pill mt-3" href={`/learning/listening/${params?.slug}`}>
+                    Vào học ngay
+                </a>
+            </div>
             {/* {params.slug} */}
         </>
     );

@@ -2,6 +2,7 @@ import { useAuth } from '../context/auth';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import CourseCard from '../components/cards/CourseCard';
+import Slider from '../components/sliders/slider';
 
 export default function Home() {
     // context
@@ -57,12 +58,21 @@ export default function Home() {
     }
 
     return (
-        <div className="container">
-            <h1 className="default-top-margin display-1 bg-primary text-light p-5">English Education for Everyone</h1>
+        <div className="container-fluid px-0">
+            {/* <h1 className="default-top-margin display-1 text-secondary p-5">English Education for Everyone</h1> */}
+            <h1 className="default-top-margin text-center text-lg-start pt-4 pb-3 ms-lg-5 display-3 text-secondary fw-bolder">
+                English Education for Everyone
+            </h1>
+
+            <div className="d-flex justify-content-center justify-content-lg-start ms-lg-5">
+                <button className="btn btn-primary btn-custom rounded-pill mb-5">Tìm hiểu</button>
+            </div>
+
+            <Slider></Slider>
 
             {loggedIn && isEnrolled ? (
                 <>
-                    <h3> Khóa học của tôi </h3>
+                    <h2> Khóa học của tôi </h2>
                     <div>
                         <div className="row">
                             {enrolledCourses?.map((course) => (
@@ -74,10 +84,13 @@ export default function Home() {
             ) : (
                 ''
             )}
+            <h2 className="text-center text-lg-start pt-4 pb-3 ms-lg-5 display-5 fw-bolder" id="posted-courses">
+                Các khóa học
+            </h2>
+            {/* <h1 className="display-4 fw-bolder text-center text-lg-start">Các khóa học</h1> */}
 
-            <h3> Các khóa học </h3>
             <div>
-                <div className="row">
+                <div className="container row">
                     {courses?.map((course) => (
                         <CourseCard course={course} key={course._id} />
                     ))}

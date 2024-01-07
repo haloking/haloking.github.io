@@ -1,10 +1,9 @@
-/* avoid fixed top nav-bar from hiding content */
-.default-top-margin {
-    margin-top: 100px;
+/* two columns scrollable independently */
+div#col-left {
+    // max-height: 100vh;
+    overflow-y: scroll;
 }
 
-/* two columns scrollable independently */
-div#col-left,
 div#col-right {
     max-height: 100vh;
     /* overflow-y: scroll; */

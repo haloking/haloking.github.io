@@ -1,5 +1,6 @@
 import { useAuth } from '../../context/auth';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { FaUserCircle } from 'react-icons/fa';
 
 export default function NavBar() {
     // access context
@@ -15,11 +16,8 @@ export default function NavBar() {
     };
 
     return (
-        <nav className="navbar fixed-top navbar-expand-lg navbar-dark bg-primary ">
+        <nav className="navbar bg-white  shadow-sm fixed-top navbar-expand-lg">
             <div className="container-fluid">
-                <a className="navbar-brand" href="/">
-                    EEE
-                </a>
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -31,16 +29,20 @@ export default function NavBar() {
                 >
                     <span className="navbar-toggler-icon"></span>
                 </button>
+                <a className="navbar-brand text-secondary" href="/">
+                    <i className="fa-solid fa-snowflake" id="logo" /> EEE
+                </a>
+
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <a className="nav-link" aria-current="page" href="/">
+                            <a className="nav-link btn btn-secondary rounded-pill" aria-current="page" href="/">
                                 Trang chủ
                             </a>
                         </li>
                         {loggedIn ? (
                             <li className="nav-item">
-                                <a className="nav-link" href="/user/enrolled-courses">
+                                <a className="nav-link btn btn-secondary rounded-pill" href="/user/enrolled-courses">
                                     Khóa học của tôi
                                 </a>
                             </li>
@@ -48,7 +50,7 @@ export default function NavBar() {
                             ''
                         )}
                         <li className="nav-item">
-                            <a className="nav-link" href="/learning">
+                            <a className="nav-link btn btn-secondary rounded-pill" href="/">
                                 Học tập
                             </a>
                         </li>
@@ -56,13 +58,13 @@ export default function NavBar() {
                         {!loggedIn ? (
                             <>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="/login">
-                                        Đăng nhập
+                                    <a className="nav-link btn btn-secondary rounded-pill" href="/register">
+                                        Đăng ký
                                     </a>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="/register">
-                                        Đăng ký
+                                    <a className="nav-link btn btn-secondary rounded-pill" href="/login">
+                                        <i className="fa-solid fa-circle-user fs-5" /> Đăng nhập
                                     </a>
                                 </li>
                             </>
@@ -74,13 +76,13 @@ export default function NavBar() {
                             <>
                                 <li className="nav-item dropdown">
                                     <a
-                                        className="nav-link dropdown-toggle"
+                                        className="nav-link btn btn-secondary rounded-pill dropdown-toggle"
                                         id="navbarDropdown"
                                         role="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
                                     >
-                                        User
+                                        <i class="fa-solid fa-person-shelter"></i> User
                                     </a>
                                     <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
                                         <li>
