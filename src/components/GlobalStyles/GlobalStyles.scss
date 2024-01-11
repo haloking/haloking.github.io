@@ -4,20 +4,37 @@
 $primary: #413ada;
 $secondary: #f47a62;
 
+// $primary: #f47a62;
+// $secondary: #413ada;
+
 $headings-font-family: Roboto;
 
 // change height of brand -> change height of navbar
-$navbar-brand-padding-y: 1rem;
-
+// $navbar-brand-padding-y: 1rem;
 $navbar-brand-font-size: 1.5rem;
 
 /* import bootstrap to set changes */
 @import '~bootstrap/scss/bootstrap';
 // @import '../../../node_modules/bootstrap/scss/bootstrap';
 
+html {
+    text-rendering: optimizeSpeed;
+    // overflow-y: hidden;
+}
+
+body {
+    overflow-y: hidden;
+}
+
 /* avoid fixed top nav-bar from hiding content */
 .default-top-margin {
-    margin-top: 100px;
+    margin-top: 5.5rem;
+    // margin-top: 5rem;
+    // margin-top: 4rem;
+}
+
+.learning-top-margin {
+    margin-top: 4rem;
 }
 
 .heading-h1 {

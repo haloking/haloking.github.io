@@ -1,12 +1,10 @@
 /* two columns scrollable independently */
 div#col-left {
-    // max-height: 100vh;
-    overflow-y: scroll;
+    // overflow-y: scroll;
 }
 
 div#col-right {
-    max-height: 100vh;
-    /* overflow-y: scroll; */
+    // overflow-y: scroll;
 }
 
 /* make youtube full width */
@@ -50,6 +48,7 @@ div#col-right {
 .form-control-dictation {
     border: none;
     text-align: center;
+    border-bottom: 1px solid grey;
 }
 
 .form-control-dictation-right {

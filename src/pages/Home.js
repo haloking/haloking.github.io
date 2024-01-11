@@ -3,8 +3,15 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import CourseCard from '../components/cards/CourseCard';
 import Slider from '../components/sliders/slider';
+import { Scrollbars } from 'react-custom-scrollbars-2';
+import useSize from '../helpers/useSize';
 
 export default function Home() {
+    // get window size dynamically
+    const windowSize = useSize();
+    console.log('width:', windowSize[0]);
+    console.log('height:', windowSize[1]);
+
     // context
     const [auth, setAuth] = useAuth();
 
@@ -58,46 +65,58 @@ export default function Home() {
     }
 
     return (
-        <div className="container-fluid px-0">
-            {/* <h1 className="default-top-margin display-1 text-secondary p-5">English Education for Everyone</h1> */}
-            <h1 className="default-top-margin text-center text-lg-start pt-4 pb-3 ms-lg-5 display-3 text-secondary fw-bolder">
-                English Education for Everyone
-            </h1>
+        <Scrollbars style={{ height: '100vh' }}>
+            <div className="container-fluid p-0">
+                {/* <h1 className="default-top-margin display-1 text-secondary p-5">English Education for Everyone</h1> */}
+                <h1 className="default-top-margin text-center text-lg-start pt-4 pb-3 ms-lg-5 display-3 text-secondary fw-bolder">
+                    English Education for Everyone
+                </h1>
 
-            <div className="d-flex justify-content-center justify-content-lg-start ms-lg-5">
-                <button className="btn btn-primary btn-custom rounded-pill mb-5">Tìm hiểu</button>
-            </div>
-
-            <Slider></Slider>
-
-            {loggedIn && isEnrolled ? (
-                <>
-                    <h2> Khóa học của tôi </h2>
-                    <div>
-                        <div className="row">
-                            {enrolledCourses?.map((course) => (
-                                <CourseCard course={course} key={course._id} />
-                            ))}
-                        </div>
-                    </div>
-                </>
-            ) : (
-                ''
-            )}
-            <h2 className="text-center text-lg-start pt-4 pb-3 ms-lg-5 display-5 fw-bolder" id="posted-courses">
-                Các khóa học
-            </h2>
-            {/* <h1 className="display-4 fw-bolder text-center text-lg-start">Các khóa học</h1> */}
-
-            <div>
-                <div className="container row">
-                    {courses?.map((course) => (
-                        <CourseCard course={course} key={course._id} />
-                    ))}
+                <div className="d-flex justify-content-center justify-content-lg-start ms-lg-5">
+                    <a href="#posted-courses" className="btn btn-primary btn-custom rounded-pill mb-5">
+                        Tìm hiểu
+                    </a>
                 </div>
-            </div>
 
-            {/* <pre>{JSON.stringify(auth, null, 4)}</pre> */}
-        </div>
+                <Slider></Slider>
+
+                {loggedIn && isEnrolled ? (
+                    <>
+                        <h2> Khóa học của tôi </h2>
+                        <div>
+                            <div className="row">
+                                {enrolledCourses?.map((course) => (
+                                    <CourseCard course={course} key={course._id} />
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    ''
+                )}
+                <h2 className="text-center text-lg-start pt-4 pb-3 ms-lg-5 display-5 fw-bolder" id="posted-courses">
+                    Các khóa học
+                </h2>
+                {/* <h1 className="display-4 fw-bolder text-center text-lg-start">Các khóa học</h1> */}
+
+                <div>
+                    <div className="container row">
+                        {courses?.map((course) => (
+                            <CourseCard course={course} key={course._id} />
+                        ))}
+                    </div>
+                </div>
+
+                {/* <h3>Ending</h3> */}
+                <div className="">
+                    Width : <span>{windowSize[0]}</span>
+                </div>
+                <div className="">
+                    Height : <span>{windowSize[1]}</span>
+                </div>
+
+                {/* <pre>{JSON.stringify(auth, null, 4)}</pre> */}
+            </div>
+        </Scrollbars>
     );
 }

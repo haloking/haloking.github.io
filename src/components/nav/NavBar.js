@@ -16,7 +16,7 @@ export default function NavBar() {
     };
 
     return (
-        <nav className="navbar bg-white  shadow-sm fixed-top navbar-expand-lg">
+        <nav className="navbar bg-white shadow-sm fixed-top py-3 navbar-expand-lg">
             <div className="container-fluid">
                 <button
                     className="navbar-toggler"

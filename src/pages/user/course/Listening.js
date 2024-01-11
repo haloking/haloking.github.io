@@ -1,18 +1,34 @@
 import './Listening.scss';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/auth';
+import { useIsLearning } from '../../../context/isLearning';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactPlayer from 'react-player';
-import $ from 'jquery';
+// import $ from 'jquery';
+import { Scrollbars } from 'react-custom-scrollbars-2';
+
+import LearningTopBar from '../../../components/nav/LearningTopBar';
 
 // import sound from '../../../assets/audio/audiotest.mp3';
 // import { tapeScript } from '../../../helpers/tapeScript';
+import useSize from '../../../helpers/useSize';
+import LearningBottomBar from '../../../components/nav/LearningBottomBar';
 
 export default function Learning() {
+    // context
+    const [isLearning, setIsLearning] = useIsLearning();
+    setIsLearning(true);
+    console.log('isLearning', isLearning);
+
+    // get window size dynamically
+    const windowSize = useSize();
+    console.log('width:', windowSize[0]);
+    console.log('height:', windowSize[1]);
+
     // state
     const [course, setCourse] = useState({});
     const [curriculums, setCurriculums] = useState([]);
@@ -68,7 +84,10 @@ export default function Learning() {
 
     // accordion
     const accItemsRefs = useRef([]);
-    const accRef = useRef();
+    const accordionRef = useRef(null);
+
+    // fixed content title
+    const contentTitleRef = useRef(null);
 
     // hooks
     const params = useParams();
@@ -136,34 +155,74 @@ export default function Learning() {
         return () => clearInterval(interval);
     }, [currentTime]);
 
-    // active accordion item scrolls to top
+    // animate the active accordion item to scroll to top
     useEffect(() => {
-        // console.log(accItemsRefs.current);
-        // console.log(accRef.current);
+        if (curriculums.length > 0) {
+            // get accordion elements using useRef
+            const accordionItems = accItemsRefs.current;
 
-        const accordionItems = accItemsRefs.current;
-        const acc = accRef.current;
+            // get Scrollbars component of accordion
+            const accComponent = accordionRef.current;
 
-        accordionItems.forEach((el) => {
-            // console.log(el);
-            el.addEventListener('shown.bs.collapse', (e) => {
-                const rect = el.getBoundingClientRect();
-                console.log(rect);
-                console.log(acc.scrollTop);
-                console.log(el.parentNode.offsetTop);
+            // get actual DOM element of accordion
+            const acc = accComponent.view;
+            console.log(acc);
 
-                var scrollOffset = acc.scrollTop + el.parentNode.offsetTop;
-                console.log(scrollOffset);
+            var r = document.querySelector(':root');
+            console.log(r.style);
 
-                window.scroll({
-                    top: scrollOffset,
-                    left: 0,
-                    behavior: 'smooth',
+            // r.style.setProperty('--navbar-brand-padding-y', '0.5rem');
+
+            // console.log(contentTitleRef.current.getBoundingClientRect());
+
+            accordionItems.map((el, index) => {
+                // console.log(el);
+                el.addEventListener('shown.bs.collapse', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    console.log(rect);
+                    // But we can´t just simply set the ref prop on the Scrollbars component,
+                    // because this would be a reference to the component, not the actual DOM element.
+                    acc.scrollBy({
+                        top: rect.top - 190.39,
+                        // left: 0,
+                        behavior: 'smooth',
+                    });
+
+                    // acc.scroll({
+                    //     top: rect.top - 190.39,
+                    //     behavior: 'smooth',
+                    // });
+
+                    // console.log(acc.scrollTop);
+                    // console.log(el.parentNode.offsetTop);
+
+                    // var scrollOffset = acc.scrollTop + el.parentNode.offsetTop;
+                    // var scrollOffset = acc.scrollTop + el.parentNode.offsetTop;
+                    // console.log(scrollOffset);
+
+                    // acc.scroll({
+                    //     top: scrollOffset,
+                    //     // left: 0,
+                    //     behavior: 'smooth',
+                    // });
+
+                    // acc.scrollBy({
+                    //     top: rect.top - 190.39,
+                    //     // left: 0,
+                    //     behavior: 'smooth',
+                    // });
+
+                    // window.scroll({
+                    //     top: scrollOffset,
+                    //     // left: 0,
+                    //     behavior: 'smooth',
+                    // });
                 });
             });
-        });
+        }
     }, [curriculums]);
 
+    // This works well, but not common pratice in React because it interfere DOM directly
     // useEffect(() => {
     //     // js for active accordion item going to top
     //     const accordionItems = document.querySelectorAll('.accordion-collapse');
@@ -792,426 +851,428 @@ export default function Learning() {
     };
 
     return (
-        <div>
-            <div className="container-fluid ">
-                <div className="row">
-                    {/* left column, the learning window */}
+        <div className="container-fluid">
+            {isLearning && <LearningTopBar title={course.title}></LearningTopBar>}
+
+            <div className="row">
+                {/* left column, the learning window */}
+                <div className="col-sm-9 learning-top-margin" id="col-left">
                     {isLessonSelected ? (
-                        <div className="col-sm-9 default-top-margin" id="col-left">
-                            {/* navbar when learning */}
-                            {/* <nav className="navbar navbar-expand-lg navbar-light bg-light ">
-                                <div className="container-fluid">
-                                    <a className="navbar-brand" href="/">
-                                        EEE
-                                    </a>
-                                    <a className="navbar-brand" href={`/course/${course.slug}`}>
-                                        {course.title}
-                                    </a>
-                                    <button onClick={handleShowDictation} className="navbar-brand btn-primary">
-                                        Nghe chép chính tả
-                                    </button>
-                                    <button onClick={handleShowTapescript} className="navbar-brand btn-primary">
-                                        Nghe có lời thoại
-                                    </button>
-                                    <button
-                                        className="navbar-toggler"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#navbarNavAltMarkup"
-                                        aria-controls="navbarNavAltMarkup"
-                                        aria-expanded="false"
-                                        aria-label="Toggle navigation"
-                                    >
-                                        <span className="navbar-toggler-icon"></span>
-                                    </button>
-                                    <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
-                                        <div className="navbar-nav">
-                                            <a className="nav-link active" aria-current="page">
-                                                Quá trình học tập
-                                            </a>
-                                            <a className="nav-link">Hướng dẫn</a>
-                                        </div>
+                        <div className="container-fluid ">
+                            <div className="row">
+                                <div className="col-sm-6 bg-secondary-subtle mb-3 p-3 d-flex justify-content-center">
+                                    <div>
+                                        <button
+                                            onClick={handleShowDictation}
+                                            className="btn btn-secondary rounded-pill text-light"
+                                        >
+                                            Nghe chép chính tả
+                                        </button>{' '}
+                                        <button
+                                            onClick={handleShowTapescript}
+                                            className="btn btn-secondary rounded-pill text-light"
+                                        >
+                                            Nghe có lời thoại
+                                        </button>
+                                        {isDictating ? (
+                                            <div className="mt-3">
+                                                {/* <h4 className="text-secondary text-align-center mt-3">
+                                                    Luyện nghe chép chính tả
+                                                </h4> */}
+                                                <select
+                                                    className="form-select mb-3 w-50"
+                                                    aria-label="Default select example"
+                                                    value={level}
+                                                    onChange={(e) => {
+                                                        console.log('level:', e.target.value);
+                                                        setLevel(e.target.value);
+                                                        assignSelectedDictationIndex(e.target.value);
+                                                    }}
+                                                >
+                                                    <option value="easy">Dễ</option>
+                                                    <option value="medium">Trung bình</option>
+                                                    <option value="difficult">Khó</option>
+                                                    <option value="all">Cả câu</option>
+                                                </select>
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                {/* <h4 className="text-secondary text-align-center mt-3">
+                                                    Luyện nghe có lời thoại
+                                                </h4> */}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                            </nav> */}
-
-                            <div className="">
-                                <button
-                                    onClick={handleShowDictation}
-                                    className="btn btn-secondary rounded-pill text-light"
-                                >
-                                    Nghe chép chính tả
-                                </button>{' '}
-                                <button
-                                    onClick={handleShowTapescript}
-                                    className="btn btn-secondary rounded-pill text-light"
-                                >
-                                    Nghe có lời thoại
-                                </button>
-                                {isDictating ? (
-                                    <h3 className="text-secondary mt-3 mb-3">Luyện nghe chép chính tả</h3>
-                                ) : (
-                                    <h3 className="text-secondary mt-3 mb-3">Luyện nghe có lời thoại</h3>
-                                )}
-                                <ReactPlayer
-                                    url={audio}
-                                    ref={playerRef}
-                                    width="400px"
-                                    height="50px"
-                                    controls={true}
-                                    playing={playing}
-                                    onPlay={play}
-                                    onPause={pause}
-                                />
-                                {/* <ReactPlayer
-                                url="https://www.computerhope.com/jargon/m/example.mp3"
-                                ref={playerRef}
-                                width="400px"
-                                height="50px"
-                                controls={true}
-                                playing={playing}
-                                onPlay={play}
-                                onPause={pause}
-                            /> */}
-                                {/* <ReactPlayer
-                                url={sound}
-                                ref={playerRef}
-                                width="400px"
-                                height="50px"
-                                controls={true}
-                                playing={playing}
-                                onPlay={play}
-                                onPause={pause}
-                            /> */}
-                                <div className="form-check form-switch mt-3 mb-3 ms-3">
-                                    <input
-                                        onChange={handleRepeat}
-                                        className="form-check-input"
-                                        type="checkbox"
-                                        id="flexSwitchCheckDefault"
-                                        checked={isRepeatedOn}
-                                    ></input>
-                                    <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                                        Repeat
-                                    </label>
-                                </div>
-                                <div className="form-check form-switch mt-3 mb-3 ms-3">
-                                    <input
-                                        onChange={handleVietnameseSubtitle}
-                                        className="form-check-input"
-                                        type="checkbox"
-                                        id="flexSwitchCheckVietnameseSubtitle"
-                                        checked={isVietnamese}
-                                    ></input>
-                                    <label className="form-check-label" htmlFor="flexSwitchCheckVietnameseSubtitle">
-                                        Vietnamese
-                                    </label>
+                                <div className="col-sm-6 bg-secondary-subtle mb-3 p-3">
+                                    <div>
+                                        <ReactPlayer
+                                            url={audio}
+                                            ref={playerRef}
+                                            width="300px"
+                                            height="50px"
+                                            controls={true}
+                                            playing={playing}
+                                            onPlay={play}
+                                            onPause={pause}
+                                        />
+                                        {/* <ReactPlayer
+                                        url="https://www.computerhope.com/jargon/m/example.mp3"
+                                        ref={playerRef}
+                                        width="400px"
+                                        height="50px"
+                                        controls={true}
+                                        playing={playing}
+                                        onPlay={play}
+                                        onPause={pause}
+                                        /> */}
+                                        {/* <ReactPlayer
+                                        url={sound}
+                                        ref={playerRef}
+                                        width="400px"
+                                        height="50px"
+                                        controls={true}
+                                        playing={playing}
+                                        onPlay={play}
+                                        onPause={pause}
+                                        /> */}
+                                    </div>
+                                    <div className="form-check form-switch mt-3">
+                                        <input
+                                            onChange={handleRepeat}
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id="flexSwitchCheckDefault"
+                                            checked={isRepeatedOn}
+                                        ></input>
+                                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
+                                            Lặp lại
+                                        </label>
+                                    </div>
+                                    <div className="form-check form-switch">
+                                        <input
+                                            onChange={handleVietnameseSubtitle}
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id="flexSwitchCheckVietnameseSubtitle"
+                                            checked={isVietnamese}
+                                        ></input>
+                                        <label className="form-check-label" htmlFor="flexSwitchCheckVietnameseSubtitle">
+                                            Tiếng Việt
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
+                            {/* <Scrollbars style={{ height: `${windowSize[1] - 64 - 160 - 57}px` }}> */}
+                            <Scrollbars style={{ height: `${windowSize[1] - 300 - 57}px` }}>
+                                {/* <h2>current time playing: {currentTime} second.</h2> */}
 
-                            {/* <h2>current time playing: {currentTime} second.</h2> */}
-
-                            {isDictating ? (
-                                <>
-                                    <select
-                                        className="form-select mb-3 w-25"
-                                        aria-label="Default select example"
-                                        value={level}
-                                        onChange={(e) => {
-                                            console.log('level:', e.target.value);
-                                            setLevel(e.target.value);
-                                            assignSelectedDictationIndex(e.target.value);
-                                        }}
-                                    >
-                                        <option value="easy">Dễ</option>
-                                        <option value="medium">Trung bình</option>
-                                        <option value="difficult">Khó</option>
-                                        <option value="all">Nghe chép cả câu</option>
-                                    </select>
-
-                                    <div className="">
-                                        <button
-                                            onClick={handlePrevious}
-                                            type="button"
-                                            className="btn btn-secondary rounded-pill btn-sm"
-                                        >
-                                            Câu trước
-                                        </button>{' '}
-                                        <button
-                                            onClick={handleListenAgain}
-                                            type="button"
-                                            className="btn btn-secondary rounded-pill btn-sm"
-                                        >
-                                            Nghe lại
-                                        </button>{' '}
-                                        {/* <button
-                                        onClick={handleCheckAnswer}
-                                        type="button"
-                                        className="btn btn-secondary rounded-pill btn-sm"
-                                    >
-                                        Kiểm tra
-                                    </button> */}
-                                        <button
-                                            onClick={handleShowCorrectAnswer}
-                                            type="button"
-                                            className="btn btn-secondary rounded-pill btn-sm"
-                                        >
-                                            Đáp án
-                                        </button>{' '}
-                                        <button
-                                            onClick={handleClearAnswer}
-                                            type="button"
-                                            className="btn btn-secondary rounded-pill btn-sm"
-                                        >
-                                            Xóa
-                                        </button>{' '}
-                                        <button
-                                            onClick={handleNext}
-                                            type="button"
-                                            className="btn btn-secondary rounded-pill btn-sm"
-                                        >
-                                            Câu sau
-                                        </button>
-                                    </div>
-
-                                    {level !== 'all' ? (
-                                        // listening then fill in the blanks
-                                        <div className="mt-3">
-                                            {tapescript[textIndex]?.seperatedText?.map((word, index) => {
-                                                const isIncluded =
-                                                    tapescript[textIndex].selectedDictationIndex.includes(index);
-                                                if (isIncluded) {
-                                                    const indexAnswer = tapescript[
-                                                        textIndex
-                                                    ].selectedDictationIndex.findIndex((i) => i === index);
-                                                    // console.log(indexAnswer);
-
-                                                    switch (indexAnswer) {
-                                                        case 0:
-                                                            correctAnswer0 = word;
-                                                            return (
-                                                                <input
-                                                                    key={index}
-                                                                    type="text"
-                                                                    className={
-                                                                        !isCheckAnswer
-                                                                            ? 'form-control-dictation'
-                                                                            : answer0.toLowerCase() ===
-                                                                              word.toLowerCase()
-                                                                            ? 'form-control-dictation-right'
-                                                                            : 'form-control-dictation-wrong'
-                                                                    }
-                                                                    style={{
-                                                                        color:
-                                                                            answer0.toLowerCase() === word.toLowerCase()
-                                                                                ? 'blue'
-                                                                                : 'red',
-                                                                    }}
-                                                                    value={answer0}
-                                                                    onChange={(e) => setAnswer0(e.target.value)}
-                                                                />
-                                                                // {isCorrectAnswer0? <></>:<></>}
-                                                            );
-                                                        case 1:
-                                                            correctAnswer1 = word;
-                                                            return (
-                                                                <input
-                                                                    key={index}
-                                                                    type="text"
-                                                                    className={
-                                                                        !isCheckAnswer
-                                                                            ? 'form-control-dictation'
-                                                                            : answer1.toLowerCase() ===
-                                                                              word.toLowerCase()
-                                                                            ? 'form-control-dictation-right'
-                                                                            : 'form-control-dictation-wrong'
-                                                                    }
-                                                                    style={{
-                                                                        color:
-                                                                            answer1.toLowerCase() === word.toLowerCase()
-                                                                                ? 'blue'
-                                                                                : 'red',
-                                                                    }}
-                                                                    value={answer1}
-                                                                    onChange={(e) => setAnswer1(e.target.value)}
-                                                                />
-                                                            );
-                                                        case 2:
-                                                            correctAnswer2 = word;
-                                                            return (
-                                                                <input
-                                                                    key={index}
-                                                                    type="text"
-                                                                    className={
-                                                                        !isCheckAnswer
-                                                                            ? 'form-control-dictation'
-                                                                            : answer2.toLowerCase() ===
-                                                                              word.toLowerCase()
-                                                                            ? 'form-control-dictation-right'
-                                                                            : 'form-control-dictation-wrong'
-                                                                    }
-                                                                    style={{
-                                                                        color:
-                                                                            answer2.toLowerCase() === word.toLowerCase()
-                                                                                ? 'blue'
-                                                                                : 'red',
-                                                                    }}
-                                                                    value={answer2}
-                                                                    onChange={(e) => setAnswer2(e.target.value)}
-                                                                />
-                                                            );
-                                                        case 3:
-                                                            correctAnswer3 = word;
-                                                            return (
-                                                                <input
-                                                                    key={index}
-                                                                    type="text"
-                                                                    className={
-                                                                        !isCheckAnswer
-                                                                            ? 'form-control-dictation'
-                                                                            : answer3.toLowerCase() ===
-                                                                              word.toLowerCase()
-                                                                            ? 'form-control-dictation-right'
-                                                                            : 'form-control-dictation-wrong'
-                                                                    }
-                                                                    style={{
-                                                                        color:
-                                                                            answer3.toLowerCase() === word.toLowerCase()
-                                                                                ? 'blue'
-                                                                                : 'red',
-                                                                    }}
-                                                                    value={answer3}
-                                                                    onChange={(e) => setAnswer3(e.target.value)}
-                                                                />
-                                                            );
-                                                        case 4:
-                                                            correctAnswer4 = word;
-                                                            return (
-                                                                <input
-                                                                    key={index}
-                                                                    type="text"
-                                                                    className={
-                                                                        !isCheckAnswer
-                                                                            ? 'form-control-dictation'
-                                                                            : answer4.toLowerCase() ===
-                                                                              word.toLowerCase()
-                                                                            ? 'form-control-dictation-right'
-                                                                            : 'form-control-dictation-wrong'
-                                                                    }
-                                                                    style={{
-                                                                        color:
-                                                                            answer4.toLowerCase() === word.toLowerCase()
-                                                                                ? 'blue'
-                                                                                : 'red',
-                                                                    }}
-                                                                    value={answer4}
-                                                                    onChange={(e) => setAnswer4(e.target.value)}
-                                                                />
-                                                            );
-                                                        case 5:
-                                                            correctAnswer5 = word;
-                                                            return (
-                                                                <input
-                                                                    key={index}
-                                                                    type="text"
-                                                                    className={
-                                                                        !isCheckAnswer
-                                                                            ? 'form-control-dictation'
-                                                                            : answer5.toLowerCase() ===
-                                                                              word.toLowerCase()
-                                                                            ? 'form-control-dictation-right'
-                                                                            : 'form-control-dictation-wrong'
-                                                                    }
-                                                                    style={{
-                                                                        color:
-                                                                            answer5.toLowerCase() === word.toLowerCase()
-                                                                                ? 'blue'
-                                                                                : 'red',
-                                                                    }}
-                                                                    value={answer5}
-                                                                    onChange={(e) => setAnswer5(e.target.value)}
-                                                                />
-                                                            );
-                                                    }
-                                                } else {
-                                                    return <span key={index}>{word}</span>;
-                                                }
-                                                // return isIncluded ? (
-                                                //     <input
-                                                //         key={index}
-                                                //         type="text"
-                                                //         className="form-control-dictation"
-                                                //         value={`answer${indexAnswer}`}
-                                                //         onChange={(e) => `setAnswer${indexAnswer}`(e.target.value)}
-                                                //     />
-                                                // ) : (
-                                                //     <span key={index}>{word}</span>
-                                                // );
-                                            })}
-                                        </div>
-                                    ) : (
-                                        // listening then write whole sentences
-                                        <div>
-                                            <textarea
-                                                className="form-control mb-3"
-                                                style={{
-                                                    color: isCorrectWholeSentence() ? 'blue' : 'red',
-                                                }}
-                                                value={answerWholeSentence}
-                                                placeholder="Chép cả câu ở đây"
-                                                onChange={(e) => setAnswerWholeSentence(e.target.value)}
-                                            />
-                                        </div>
-                                    )}
-                                    {isVietnamese ? <p className="mt-3">{tapescript[textIndex].vietnamese}</p> : <></>}
-                                </>
-                            ) : (
-                                // listening with tapescript UI
-                                <div>
-                                    {tapescript?.map((text, index) => (
-                                        <div className="mb-3 ms-3" key={index}>
-                                            {text.seperatedText?.map((word, i) => (
-                                                <span
-                                                    onClick={(e) => handleClickSentence(e, text)}
-                                                    style={{
-                                                        color:
-                                                            currentTime > text.timeStartSeperatedText[i] / 1000 &&
-                                                            currentTime < text.timeEndSeperatedText[i] / 1000
-                                                                ? ''
-                                                                : '',
-                                                        border:
-                                                            currentTime > text.timeStartSeperatedText[i] / 1000 &&
-                                                            currentTime < text.timeEndSeperatedText[i] / 1000
-                                                                ? '2px solid Tomato'
-                                                                : '',
-                                                    }}
-                                                    key={i}
+                                {isDictating ? (
+                                    <div className="row">
+                                        <div className="col-sm-3"></div>
+                                        <div className="col-sm-6">
+                                            <div className="mt-3 mb-3">
+                                                <button
+                                                    onClick={handlePrevious}
+                                                    type="button"
+                                                    className="btn btn-secondary rounded-pill btn-sm"
                                                 >
-                                                    {word}
-                                                </span>
-                                            ))}
-                                            <br></br>
+                                                    Câu trước
+                                                </button>{' '}
+                                                <button
+                                                    onClick={handleListenAgain}
+                                                    type="button"
+                                                    className="btn btn-secondary rounded-pill btn-sm"
+                                                >
+                                                    Nghe lại
+                                                </button>{' '}
+                                                {/* <button
+                                                onClick={handleCheckAnswer}
+                                                type="button"
+                                                className="btn btn-secondary rounded-pill btn-sm"
+                                                >
+                                                Kiểm tra
+                                                </button> */}
+                                                <button
+                                                    onClick={handleShowCorrectAnswer}
+                                                    type="button"
+                                                    className="btn btn-secondary rounded-pill btn-sm"
+                                                >
+                                                    Đáp án
+                                                </button>{' '}
+                                                <button
+                                                    onClick={handleClearAnswer}
+                                                    type="button"
+                                                    className="btn btn-secondary rounded-pill btn-sm"
+                                                >
+                                                    Xóa
+                                                </button>{' '}
+                                                <button
+                                                    onClick={handleNext}
+                                                    type="button"
+                                                    className="btn btn-secondary rounded-pill btn-sm"
+                                                >
+                                                    Câu sau
+                                                </button>
+                                            </div>
+
+                                            {level !== 'all' ? (
+                                                // listening then fill in the blanks
+                                                <div className="mt-3">
+                                                    {tapescript[textIndex]?.seperatedText?.map((word, index) => {
+                                                        const isIncluded =
+                                                            tapescript[textIndex].selectedDictationIndex.includes(
+                                                                index,
+                                                            );
+                                                        if (isIncluded) {
+                                                            const indexAnswer = tapescript[
+                                                                textIndex
+                                                            ].selectedDictationIndex.findIndex((i) => i === index);
+                                                            // console.log(indexAnswer);
+
+                                                            switch (indexAnswer) {
+                                                                case 0:
+                                                                    correctAnswer0 = word;
+                                                                    return (
+                                                                        <input
+                                                                            key={index}
+                                                                            type="text"
+                                                                            className={
+                                                                                !isCheckAnswer
+                                                                                    ? 'form-control-dictation'
+                                                                                    : answer0.toLowerCase() ===
+                                                                                      word.toLowerCase()
+                                                                                    ? 'form-control-dictation-right'
+                                                                                    : 'form-control-dictation-wrong'
+                                                                            }
+                                                                            style={{
+                                                                                color:
+                                                                                    answer0.toLowerCase() ===
+                                                                                    word.toLowerCase()
+                                                                                        ? 'blue'
+                                                                                        : 'red',
+                                                                            }}
+                                                                            value={answer0}
+                                                                            onChange={(e) => setAnswer0(e.target.value)}
+                                                                        />
+                                                                        // {isCorrectAnswer0? <></>:<></>}
+                                                                    );
+                                                                case 1:
+                                                                    correctAnswer1 = word;
+                                                                    return (
+                                                                        <input
+                                                                            key={index}
+                                                                            type="text"
+                                                                            className={
+                                                                                !isCheckAnswer
+                                                                                    ? 'form-control-dictation'
+                                                                                    : answer1.toLowerCase() ===
+                                                                                      word.toLowerCase()
+                                                                                    ? 'form-control-dictation-right'
+                                                                                    : 'form-control-dictation-wrong'
+                                                                            }
+                                                                            style={{
+                                                                                color:
+                                                                                    answer1.toLowerCase() ===
+                                                                                    word.toLowerCase()
+                                                                                        ? 'blue'
+                                                                                        : 'red',
+                                                                            }}
+                                                                            value={answer1}
+                                                                            onChange={(e) => setAnswer1(e.target.value)}
+                                                                        />
+                                                                    );
+                                                                case 2:
+                                                                    correctAnswer2 = word;
+                                                                    return (
+                                                                        <input
+                                                                            key={index}
+                                                                            type="text"
+                                                                            className={
+                                                                                !isCheckAnswer
+                                                                                    ? 'form-control-dictation'
+                                                                                    : answer2.toLowerCase() ===
+                                                                                      word.toLowerCase()
+                                                                                    ? 'form-control-dictation-right'
+                                                                                    : 'form-control-dictation-wrong'
+                                                                            }
+                                                                            style={{
+                                                                                color:
+                                                                                    answer2.toLowerCase() ===
+                                                                                    word.toLowerCase()
+                                                                                        ? 'blue'
+                                                                                        : 'red',
+                                                                            }}
+                                                                            value={answer2}
+                                                                            onChange={(e) => setAnswer2(e.target.value)}
+                                                                        />
+                                                                    );
+                                                                case 3:
+                                                                    correctAnswer3 = word;
+                                                                    return (
+                                                                        <input
+                                                                            key={index}
+                                                                            type="text"
+                                                                            className={
+                                                                                !isCheckAnswer
+                                                                                    ? 'form-control-dictation'
+                                                                                    : answer3.toLowerCase() ===
+                                                                                      word.toLowerCase()
+                                                                                    ? 'form-control-dictation-right'
+                                                                                    : 'form-control-dictation-wrong'
+                                                                            }
+                                                                            style={{
+                                                                                color:
+                                                                                    answer3.toLowerCase() ===
+                                                                                    word.toLowerCase()
+                                                                                        ? 'blue'
+                                                                                        : 'red',
+                                                                            }}
+                                                                            value={answer3}
+                                                                            onChange={(e) => setAnswer3(e.target.value)}
+                                                                        />
+                                                                    );
+                                                                case 4:
+                                                                    correctAnswer4 = word;
+                                                                    return (
+                                                                        <input
+                                                                            key={index}
+                                                                            type="text"
+                                                                            className={
+                                                                                !isCheckAnswer
+                                                                                    ? 'form-control-dictation'
+                                                                                    : answer4.toLowerCase() ===
+                                                                                      word.toLowerCase()
+                                                                                    ? 'form-control-dictation-right'
+                                                                                    : 'form-control-dictation-wrong'
+                                                                            }
+                                                                            style={{
+                                                                                color:
+                                                                                    answer4.toLowerCase() ===
+                                                                                    word.toLowerCase()
+                                                                                        ? 'blue'
+                                                                                        : 'red',
+                                                                            }}
+                                                                            value={answer4}
+                                                                            onChange={(e) => setAnswer4(e.target.value)}
+                                                                        />
+                                                                    );
+                                                                case 5:
+                                                                    correctAnswer5 = word;
+                                                                    return (
+                                                                        <input
+                                                                            key={index}
+                                                                            type="text"
+                                                                            className={
+                                                                                !isCheckAnswer
+                                                                                    ? 'form-control-dictation'
+                                                                                    : answer5.toLowerCase() ===
+                                                                                      word.toLowerCase()
+                                                                                    ? 'form-control-dictation-right'
+                                                                                    : 'form-control-dictation-wrong'
+                                                                            }
+                                                                            style={{
+                                                                                color:
+                                                                                    answer5.toLowerCase() ===
+                                                                                    word.toLowerCase()
+                                                                                        ? 'blue'
+                                                                                        : 'red',
+                                                                            }}
+                                                                            value={answer5}
+                                                                            onChange={(e) => setAnswer5(e.target.value)}
+                                                                        />
+                                                                    );
+                                                            }
+                                                        } else {
+                                                            return <span key={index}>{word}</span>;
+                                                        }
+                                                        // return isIncluded ? (
+                                                        //     <input
+                                                        //         key={index}
+                                                        //         type="text"
+                                                        //         className="form-control-dictation"
+                                                        //         value={`answer${indexAnswer}`}
+                                                        //         onChange={(e) => `setAnswer${indexAnswer}`(e.target.value)}
+                                                        //     />
+                                                        // ) : (
+                                                        //     <span key={index}>{word}</span>
+                                                        // );
+                                                    })}
+                                                </div>
+                                            ) : (
+                                                // listening then write whole sentences
+                                                <div>
+                                                    <textarea
+                                                        className="form-control mb-3"
+                                                        style={{
+                                                            color: isCorrectWholeSentence() ? 'blue' : 'red',
+                                                        }}
+                                                        value={answerWholeSentence}
+                                                        placeholder="Chép cả câu ở đây"
+                                                        onChange={(e) => setAnswerWholeSentence(e.target.value)}
+                                                    />
+                                                </div>
+                                            )}
                                             {isVietnamese ? (
-                                                <span
-                                                    onClick={(e) => handleClickSentence(e, text)}
-                                                    className="text-button-subtitle"
-                                                    style={{
-                                                        color:
-                                                            currentTime > text.timeStart / 1000 &&
-                                                            currentTime < text.timeEnd / 1000
-                                                                ? 'SlateBlue'
-                                                                : '',
-                                                    }}
-                                                >
-                                                    {text.vietnamese}
-                                                </span>
+                                                <p className="mt-3">{tapescript[textIndex].vietnamese}</p>
                                             ) : (
                                                 <></>
                                             )}
                                         </div>
-                                    ))}
+                                        <div className="col-sm-3"></div>
+                                    </div>
+                                ) : (
+                                    // listening with tapescript UI
+                                    <div className="">
+                                        {tapescript?.map((text, index) => (
+                                            <div className="mb-3 ms-3" key={index}>
+                                                {text.seperatedText?.map((word, i) => (
+                                                    <span
+                                                        onClick={(e) => handleClickSentence(e, text)}
+                                                        style={{
+                                                            color:
+                                                                currentTime > text.timeStartSeperatedText[i] / 1000 &&
+                                                                currentTime < text.timeEndSeperatedText[i] / 1000
+                                                                    ? 'Tomato'
+                                                                    : '',
+                                                            border:
+                                                                currentTime > text.timeStartSeperatedText[i] / 1000 &&
+                                                                currentTime < text.timeEndSeperatedText[i] / 1000
+                                                                    ? '0.1px solid Tomato'
+                                                                    : '',
+                                                            borderRadius:
+                                                                currentTime > text.timeStartSeperatedText[i] / 1000 &&
+                                                                currentTime < text.timeEndSeperatedText[i] / 1000
+                                                                    ? '5px'
+                                                                    : '',
+                                                        }}
+                                                        key={i}
+                                                    >
+                                                        {word}
+                                                    </span>
+                                                ))}
+                                                <br></br>
+                                                {isVietnamese ? (
+                                                    <span
+                                                        onClick={(e) => handleClickSentence(e, text)}
+                                                        className="text-button-subtitle"
+                                                        style={{
+                                                            color:
+                                                                currentTime > text.timeStart / 1000 &&
+                                                                currentTime < text.timeEnd / 1000
+                                                                    ? 'SlateBlue'
+                                                                    : '',
+                                                        }}
+                                                    >
+                                                        {text.vietnamese}
+                                                    </span>
+                                                ) : (
+                                                    <></>
+                                                )}
+                                            </div>
+                                        ))}
 
-                                    {/* {tapescript?.map((text, index) => (
+                                        {/* {tapescript?.map((text, index) => (
                                         <div className="mb-3" key={index}>
                                             <span
                                                 onClick={(e) => handleClickSentence(e, text)}
@@ -1248,19 +1309,23 @@ export default function Learning() {
                                             <br></br>
                                         </div>
                                     ))} */}
-                                </div>
-                            )}
+                                    </div>
+                                )}
+                            </Scrollbars>
                         </div>
                     ) : (
-                        <div className="col-sm-9 default-top-margin" id="col-left">
-                            <h1 className="display-1 bg-secondary text-light p-5">{course.title}</h1>
-                        </div>
+                        <h1 className="display-6 bg-secondary text-light p-5">{course.title}</h1>
                     )}
+                </div>
 
-                    {/* right column, the accordion */}
-                    <div className="col-sm-3 default-top-margin" id="col-right">
-                        <h5 className="mt-3">Nội dung</h5>
-                        <div ref={accRef} className="accordion accordion-flush" id="accordionExample">
+                {/* right column, the accordion */}
+                <div className="col-sm-3 learning-top-margin mx-0 p-0" id="col-right">
+                    <h5 ref={contentTitleRef} className="bg-secondary-subtle p-3 m-0">
+                        Nội dung
+                    </h5>
+                    {/* <Scrollbars ref={accordionRef} style={{ height: `${windowSize[1] - 64 - 56 - 57}px` }}> */}
+                    <Scrollbars ref={accordionRef} style={{ height: `${windowSize[1] - 300 - 57}px` }}>
+                        <div className="accordion accordion-flush" id="accordionExample">
                             {curriculums?.map((curriculum, index) => (
                                 <div className="accordion-item" key={curriculum._id}>
                                     <h2 className="accordion-header" id={`panelsStayOpen-heading-${curriculum.slug}`}>
@@ -1301,21 +1366,13 @@ export default function Learning() {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </Scrollbars>
                 </div>
             </div>
-
-            {/* fixed bottom navbar */}
-            {/* <nav className="navbar fixed-bottom navbar-light bg-light">
-                <div className="container-fluid">
-                    <a className="nav-link" href="#">
-                        Bài trước
-                    </a>
-                    <a className="nav-link" href="#">
-                        Bài sau
-                    </a>
-                </div>
-            </nav> */}
+            {/* <div className="text-center bg-light w-100 position-fixed bottom-0 start-0" style={{ height: '3rem' }}>
+                <h3>Bottom Bar</h3>
+            </div> */}
+            <LearningBottomBar></LearningBottomBar>
         </div>
     );
 }
