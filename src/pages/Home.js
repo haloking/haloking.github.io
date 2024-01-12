@@ -1,9 +1,12 @@
 import { useAuth } from '../context/auth';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+
 import CourseCard from '../components/cards/CourseCard';
 import Slider from '../components/sliders/slider';
+
 import { Scrollbars } from 'react-custom-scrollbars-2';
+
 import useSize from '../helpers/useSize';
 
 export default function Home() {

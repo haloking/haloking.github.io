@@ -1314,7 +1314,9 @@ export default function Learning() {
                             </Scrollbars>
                         </div>
                     ) : (
-                        <h1 className="display-6 bg-secondary text-light p-5">{course.title}</h1>
+                        <div>
+                            <h1 className="display-6 bg-secondary text-light p-5">{course.title}</h1>
+                        </div>
                     )}
                 </div>
 

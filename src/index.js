@@ -18,7 +18,7 @@ root.render(
     // <React.StrictMode>
     <AuthProvider>
         <IsLearningProvider>
-            <App />,
+            <App />
         </IsLearningProvider>
     </AuthProvider>,
 
