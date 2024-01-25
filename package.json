@@ -13,7 +13,6 @@
         "dayjs": "^1.11.10",
         "jquery": "^3.7.1",
         "normalize.css": "^8.0.1",
-        "overlayscrollbars": "^2.4.6",
         "overlayscrollbars-react": "^0.5.3",
         "query-string": "^8.1.0",
         "react": "^18.2.0",
