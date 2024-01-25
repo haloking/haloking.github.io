@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 
 import HomeContent from './HomeContent';
 
-// import SimpleBar from 'simplebar-react';
-// import 'simplebar-react/dist/simplebar.min.css';
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
 
 // import 'overlayscrollbars/overlayscrollbars.css';
 // import { OverlayScrollbarsComponent, useOverlayScrollbars } from 'overlayscrollbars-react';
@@ -56,22 +56,22 @@ export default function Home() {
                 // <OverlayScrollbarsComponent style={{ height: `${windowSize[1]}px` }}>
                 // </OverlayScrollbarsComponent>
                 <div>
-                    {/* <SimpleBar style={{ height: `${windowSize[1]}px` }}> */}
-                    <HomeContent></HomeContent>
+                    <SimpleBar style={{ height: `${windowSize[1]}px` }}>
+                        <HomeContent></HomeContent>
 
-                    <p>
-                        <strong>
-                            innerWidth : <span>{windowSize[0]}</span>
-                        </strong>
-                    </p>
-                    <p>
-                        <strong>
-                            innerHeight : <span>{windowSize[1]}</span>
-                        </strong>
-                    </p>
-                    <MediaDetect></MediaDetect>
-                    <h5>Applied Customized ScrollBar</h5>
-                    {/* </SimpleBar> */}
+                        <p>
+                            <strong>
+                                innerWidth : <span>{windowSize[0]}</span>
+                            </strong>
+                        </p>
+                        <p>
+                            <strong>
+                                innerHeight : <span>{windowSize[1]}</span>
+                            </strong>
+                        </p>
+                        <MediaDetect></MediaDetect>
+                        <h5>Applied Customized ScrollBar</h5>
+                    </SimpleBar>
                 </div>
             ) : (
                 <>
