@@ -11,9 +11,6 @@ import ReactDOM from 'react-dom';
 import ReactPlayer from 'react-player';
 // import $ from 'jquery';
 
-import { Scrollbars } from 'react-custom-scrollbars-2';
-// import ShadowScrollbars from './ShadowScrollbars';
-
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 

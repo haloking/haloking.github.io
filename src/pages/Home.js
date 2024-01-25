@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 
 import HomeContent from './HomeContent';
 
-import { Scrollbars } from 'react-custom-scrollbars-2';
-
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 
