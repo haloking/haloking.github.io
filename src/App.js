@@ -1,14 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/auth';
+import { IsLearningProvider } from './context/isLearning';
+import GlobalStyles from './components/GlobalStyles/Globalstyles';
 
-import { useIsLearning } from './context/isLearning';
-import GlobalStyles from './components/GlobalStyles/globalstyles';
-
+import NavBar from './components/nav/NavBar';
 import { Toaster } from 'react-hot-toast';
 
 import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import NavBar from './components/nav/NavBar';
 import Lecture from './pages/user/course/Lecture';
 import Listening from './pages/user/course/Listening';
 import AccountActivate from './pages/auth/AccountActivate';
@@ -24,41 +24,41 @@ import CourseView from './pages/CourseView';
 import CourseEdit from './pages/user/course/CourseEdit';
 
 export default function App() {
-    // context
-    const [isLearning, setIsLearning] = useIsLearning();
-    console.log('isLearning', isLearning);
-
     return (
-        <GlobalStyles>
-            <BrowserRouter>
-                {!isLearning && <NavBar></NavBar>}
-                <Toaster />
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/auth/account-activate/:token" element={<AccountActivate />} />
-                    <Route path="/auth/access-account/:token" element={<AccessAccount />} />
-                    <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+        <AuthProvider>
+            <IsLearningProvider>
+                <GlobalStyles>
+                    <BrowserRouter>
+                        <NavBar></NavBar>
+                        <Toaster />
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/auth/account-activate/:token" element={<AccountActivate />} />
+                            <Route path="/auth/access-account/:token" element={<AccessAccount />} />
+                            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
 
-                    <Route path="/" element={<PrivateRoute />}>
-                        <Route path="dashboard" element={<Dashboard />} />
+                            <Route path="/" element={<PrivateRoute />}>
+                                <Route path="dashboard" element={<Dashboard />} />
 
-                        <Route path="/user/enrolled-courses" element={<EnrolledCourses />} />
-                        <Route path="/user/posted-courses" element={<PostedCourses />} />
+                                <Route path="/user/enrolled-courses" element={<EnrolledCourses />} />
+                                <Route path="/user/posted-courses" element={<PostedCourses />} />
 
-                        {/* chỉnh sửa khóa học */}
-                        <Route path="user/course/:slug" element={<CourseEdit />} />
-                    </Route>
+                                {/* chỉnh sửa khóa học */}
+                                <Route path="user/course/:slug" element={<CourseEdit />} />
+                            </Route>
 
-                    {/* slug of the course */}
-                    <Route path="/learning/lecture/:slug" element={<Lecture />} />
-                    <Route path="/learning/listening/:slug" element={<Listening />} />
+                            {/* slug of the course */}
+                            <Route path="/learning/lecture/:slug" element={<Lecture />} />
+                            <Route path="/learning/listening/:slug" element={<Listening />} />
 
-                    <Route path="/course/create" element={<CourseCreate />} />
-                    <Route path="/course/:slug" element={<CourseView />} />
-                </Routes>
-            </BrowserRouter>
-        </GlobalStyles>
+                            <Route path="/course/create" element={<CourseCreate />} />
+                            <Route path="/course/:slug" element={<CourseView />} />
+                        </Routes>
+                    </BrowserRouter>
+                </GlobalStyles>
+            </IsLearningProvider>
+        </AuthProvider>
     );
 }

@@ -1,3 +1,5 @@
+import './Slider.scss';
+
 import pic1 from '../../assets/image/sliderPicture1.jpg';
 import pic2 from '../../assets/image/sliderPicture2.jpg';
 import pic3 from '../../assets/image/sliderPicture3.jpg';
@@ -5,6 +7,7 @@ import pic3 from '../../assets/image/sliderPicture3.jpg';
 export default function Slider() {
     return (
         <div id="carouselExampleCaptions" className="carousel slide carousel-fade" data-bs-ride="carousel">
+            {/* Indicators/dots */}
             <div className="carousel-indicators">
                 <button
                     type="button"
@@ -27,6 +30,8 @@ export default function Slider() {
                     aria-label="Slide 3"
                 ></button>
             </div>
+
+            {/* The slideshow/carousel */}
             <div className="carousel-inner">
                 <div className="carousel-item active">
                     <img src={pic1} className="d-block w-100" alt="..." />
@@ -50,6 +55,8 @@ export default function Slider() {
                     </div>
                 </div>
             </div>
+
+            {/* Left and right controls/icons */}
             <button
                 className="carousel-control-prev"
                 type="button"

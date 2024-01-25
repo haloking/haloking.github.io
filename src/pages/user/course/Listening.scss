@@ -1,3 +1,17 @@
+.learning-section {
+    // background: url(../assets/image/hero-bg.jpg) no-repeat center;
+    // background-color: black;
+    background-size: cover;
+    width: 100%;
+    // height: 100vh;
+}
+
+.learning-top-margin {
+    // margin-top: 4rem;
+    margin-top: 56px;
+    // padding-top: 56px;
+}
+
 /* two columns scrollable independently */
 div#col-left {
     // overflow-y: scroll;
@@ -22,6 +36,41 @@ div#col-right {
     left: 0;
 }
 
+// .learning-bottom-bar {
+//     position: fixed;
+//     bottom: 0;
+//     left: 0;
+//     right: 0;
+// }
+
+.dictating-window {
+    width: 92vw;
+    // height: 92vw;
+
+    height: 40vh;
+    // position: fixed;
+    // top: 6rem;
+    // left: 0;
+    // right: 0;
+    // background-color: red;
+    overflow-y: scroll;
+}
+
+.tapescript-window {
+    width: 92vw;
+    // height: 92vw;
+
+    height: 46vh;
+
+    // height: 50vh;
+    // position: fixed;
+    // top: 3rem;
+    // left: 0;
+    // right: 0;
+    // box-shadow: 0px 10px 5px rgba(0, 0, 0, 0.4) inset;
+    overflow-y: scroll;
+}
+
 .pointer {
     cursor: pointer;
 }
@@ -35,34 +84,60 @@ div#col-right {
     /* display: inline-block; */
 }
 
-.text-button-subtitle {
+.text-subtitle {
     border: none;
-    background-color: inherit;
-    padding: 14px 28px;
-    font-size: 16px;
-    cursor: pointer;
+    color: SlateBlue;
+    // background-color: inherit;
+    // padding: 14px 28px;
+    font-size: 0.85rem;
+    // cursor: pointer;
     font-style: italic;
     /* display: inline-block; */
 }
 
 .form-control-dictation {
     border: none;
+    padding: 1px 0px;
+    background-color: black;
     text-align: center;
     border-bottom: 1px solid grey;
 }
 
 .form-control-dictation-right {
     border: none;
+    background-color: black;
     text-align: center;
-    border-bottom: 2px solid blue;
+    // border-bottom: 2px solid blue;
 }
 
 .form-control-dictation-wrong {
     border: none;
+    background-color: black;
     text-align: center;
-    border-bottom: 2px solid red;
+    // border-bottom: 2px solid red;
 }
 
 input:focus {
     outline: none;
+}
+
+// .btn-custom {
+//     // padding: 10px 40px !important;
+//     font-size: 1.3rem !important;
+//     // background-color: #212529;
+//     background-color: black;
+//     border: none;
+// }
+// .btn-custom:hover {
+//     // background-color: #212529;
+//     background-color: black;
+//     border: none;
+// }
+
+.time-progress {
+    font-size: 0.6rem;
+}
+
+.fill-in-the-blanks input {
+    background-color: transparent;
 }

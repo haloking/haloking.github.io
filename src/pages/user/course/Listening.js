@@ -1,4 +1,5 @@
 import './Listening.scss';
+
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/auth';
 import { useIsLearning } from '../../../context/isLearning';
@@ -9,25 +10,62 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactPlayer from 'react-player';
 // import $ from 'jquery';
+
 import { Scrollbars } from 'react-custom-scrollbars-2';
+// import ShadowScrollbars from './ShadowScrollbars';
+
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
+
+import 'overlayscrollbars/overlayscrollbars.css';
+import { OverlayScrollbarsComponent, useOverlayScrollbars } from 'overlayscrollbars-react';
 
 import LearningTopBar from '../../../components/nav/LearningTopBar';
+import LearningBottomBar from '../../../components/nav/LearningBottomBar';
 
 // import sound from '../../../assets/audio/audiotest.mp3';
 // import { tapeScript } from '../../../helpers/tapeScript';
 import useSize from '../../../helpers/useSize';
-import LearningBottomBar from '../../../components/nav/LearningBottomBar';
+
+import { MediaDetect, Mobile, Desktop, MobileAndTablet } from '../../../components/media/MediaDetect';
+import { useMediaQuery } from 'react-responsive';
+
+import { PiRepeatThin } from 'react-icons/pi';
 
 export default function Learning() {
     // context
     const [isLearning, setIsLearning] = useIsLearning();
-    setIsLearning(true);
-    console.log('isLearning', isLearning);
+
+    // hook
+    useEffect(() => {
+        setIsLearning(true);
+        // console.log('isLearning', isLearning);
+    }, []);
 
     // get window size dynamically
     const windowSize = useSize();
-    console.log('width:', windowSize[0]);
-    console.log('height:', windowSize[1]);
+    // console.log('width:', windowSize[0]);
+    // console.log('height:', windowSize[1]);
+
+    // media query
+    const isDesktop = useMediaQuery({ minWidth: 992 });
+    const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 991 });
+    const isMobile = useMediaQuery({ maxWidth: 767 });
+
+    const isNotDesktop = useMediaQuery({ maxWidth: 992 });
+    const isNotMobile = useMediaQuery({ minWidth: 768 });
+
+    // state
+    const [isScrollbarsApplied, setIsScrollbarsApplied] = useState(true);
+
+    // hook
+    useEffect(() => {
+        if (isMobile) {
+            setIsScrollbarsApplied(false);
+        } else {
+            setIsScrollbarsApplied(true);
+        }
+    }, [windowSize]);
 
     // state
     const [course, setCourse] = useState({});
@@ -42,6 +80,7 @@ export default function Learning() {
     const [isRepeatedOn, setIsRepeatedOn] = useState(false);
     const [isVietnamese, setIsVietnamese] = useState(false);
     const [isLessonSelected, setIsLessonSelected] = useState(false);
+    const [lessonTitle, setLessonTitle] = useState('');
 
     const [audio, setAudio] = useState('');
     const [tapescript, setTapescript] = useState([]);
@@ -157,23 +196,23 @@ export default function Learning() {
 
     // animate the active accordion item to scroll to top
     useEffect(() => {
-        if (curriculums.length > 0) {
+        if (!isMobile && curriculums.length > 0) {
             // get accordion elements using useRef
             const accordionItems = accItemsRefs.current;
+            // console.log('accordionItems:', accordionItems);
 
             // get Scrollbars component of accordion
-            const accComponent = accordionRef.current;
+            // const accComponent = accordionRef.current;
+            // get actual DOM element of accordion inside Scrollbars
+            // const acc = accComponent.view;
 
-            // get actual DOM element of accordion
-            const acc = accComponent.view;
-            console.log(acc);
+            // get SimpleBar element
+            const acc = accordionRef.current;
+            // console.log('acc:', acc);
 
-            var r = document.querySelector(':root');
-            console.log(r.style);
-
+            // var r = document.querySelector(':root');
+            // console.log(r.style);
             // r.style.setProperty('--navbar-brand-padding-y', '0.5rem');
-
-            // console.log(contentTitleRef.current.getBoundingClientRect());
 
             accordionItems.map((el, index) => {
                 // console.log(el);
@@ -278,7 +317,7 @@ export default function Learning() {
         setIsVietnamese(!isVietnamese);
     };
 
-    const handleClickLesson = async (e, lessonId) => {
+    const handleClickLesson = async (e, lessonId, lessonTitle) => {
         e.preventDefault();
         // console.log(lessonId);
 
@@ -302,6 +341,10 @@ export default function Learning() {
         try {
             const { data } = await axios.get(`/course/lesson/${lessonId}`);
             const tempTapescript = data?.tapescript?.tapescript;
+            if (data) {
+                setLessonTitle(lessonTitle);
+            }
+            // console.log(lessonTitle);
 
             if (tempTapescript) {
                 const nameList = [`Lydia`, `Stevenson`, `Korpis`];
@@ -797,6 +840,7 @@ export default function Learning() {
         if (answer5.toLowerCase() !== correctAnswer5.toLowerCase()) setAnswer5(correctAnswer5);
 
         setAnswerWholeSentence(tapescript[textIndex].english);
+        setIsCheckAnswer(true);
     };
 
     const handleListenAgain = () => {
@@ -850,181 +894,101 @@ export default function Learning() {
         return tapescript[textIndex].english === answerWholeSentence;
     };
 
-    return (
-        <div className="container-fluid">
-            {isLearning && <LearningTopBar title={course.title}></LearningTopBar>}
-
-            <div className="row">
-                {/* left column, the learning window */}
-                <div className="col-sm-9 learning-top-margin" id="col-left">
-                    {isLessonSelected ? (
-                        <div className="container-fluid ">
-                            <div className="row">
-                                <div className="col-sm-6 bg-secondary-subtle mb-3 p-3 d-flex justify-content-center">
-                                    <div>
-                                        <button
-                                            onClick={handleShowDictation}
-                                            className="btn btn-secondary rounded-pill text-light"
+    // Accordion menu component
+    const Menu = () => {
+        return (
+            <div className="accordion accordion-flush mb-5" id="accordionExample">
+                {curriculums?.map((curriculum, index) => (
+                    <div className="accordion-item" key={curriculum._id}>
+                        <h2 className="accordion-header" id={`panelsStayOpen-heading-${curriculum.slug}`}>
+                            <button
+                                className="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target={`#panelsStayOpen-collapse-${curriculum.slug}`}
+                                aria-expanded="false"
+                                aria-controls={`panelsStayOpen-collapse-${curriculum.slug}`}
+                            >
+                                {curriculum.title}
+                                <br></br>
+                                3/3 | 11min
+                            </button>
+                        </h2>
+                        <div
+                            ref={(el) => (accItemsRefs.current[index] = el)}
+                            id={`panelsStayOpen-collapse-${curriculum.slug}`}
+                            className="accordion-collapse collapse"
+                            data-bs-parent="#accordionExample"
+                            aria-labelledby={`panelsStayOpen-heading-${curriculum.title}`}
+                        >
+                            <div className="accordion-body">
+                                <div className="list-group list-group-flush list-group-numbered">
+                                    {curriculum.lessons?.map((lesson) => (
+                                        <a
+                                            onClick={(e) => handleClickLesson(e, lesson._id, lesson.title)}
+                                            className="list-group-item list-group-item-action"
+                                            key={lesson._id}
                                         >
-                                            Nghe chép chính tả
-                                        </button>{' '}
-                                        <button
-                                            onClick={handleShowTapescript}
-                                            className="btn btn-secondary rounded-pill text-light"
-                                        >
-                                            Nghe có lời thoại
-                                        </button>
-                                        {isDictating ? (
-                                            <div className="mt-3">
-                                                {/* <h4 className="text-secondary text-align-center mt-3">
-                                                    Luyện nghe chép chính tả
-                                                </h4> */}
-                                                <select
-                                                    className="form-select mb-3 w-50"
-                                                    aria-label="Default select example"
-                                                    value={level}
-                                                    onChange={(e) => {
-                                                        console.log('level:', e.target.value);
-                                                        setLevel(e.target.value);
-                                                        assignSelectedDictationIndex(e.target.value);
-                                                    }}
-                                                >
-                                                    <option value="easy">Dễ</option>
-                                                    <option value="medium">Trung bình</option>
-                                                    <option value="difficult">Khó</option>
-                                                    <option value="all">Cả câu</option>
-                                                </select>
-                                            </div>
-                                        ) : (
-                                            <div>
-                                                {/* <h4 className="text-secondary text-align-center mt-3">
-                                                    Luyện nghe có lời thoại
-                                                </h4> */}
-                                            </div>
-                                        )}
-                                    </div>
+                                            {lesson.title}
+                                        </a>
+                                    ))}
                                 </div>
-                                <div className="col-sm-6 bg-secondary-subtle mb-3 p-3">
-                                    <div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    return (
+        <div className="container-fluid p-0 m-0">
+            <LearningTopBar title={course.title}></LearningTopBar>
+
+            <section className="learning-section">
+                <div className="d-flex justify-content-center flex-column bg-black bg-gradient">
+                    <div className="row learning-top-margin g-0">
+                        {/* left column, the learning window */}
+                        <div className="col-md-8 col-lg-8 col-xxl-9 text-white fw-medium" id="col-left">
+                            {isLessonSelected ? (
+                                <div className="vh-100">
+                                    {/* <h2>current time playing: {currentTime} second.</h2> */}
+                                    {/* player */}
+                                    <div className="">
                                         <ReactPlayer
                                             url={audio}
+                                            // url={sound}
+                                            // url="https://www.computerhope.com/jargon/m/example.mp3"
                                             ref={playerRef}
-                                            width="300px"
-                                            height="50px"
-                                            controls={true}
+                                            // width="400px"
+                                            width="100px"
+                                            // height="50px"
+                                            height="1px"
+                                            // controls={isDictating ? false : true}
+                                            controls={false}
                                             playing={playing}
                                             onPlay={play}
                                             onPause={pause}
                                         />
-                                        {/* <ReactPlayer
-                                        url="https://www.computerhope.com/jargon/m/example.mp3"
-                                        ref={playerRef}
-                                        width="400px"
-                                        height="50px"
-                                        controls={true}
-                                        playing={playing}
-                                        onPlay={play}
-                                        onPause={pause}
-                                        /> */}
-                                        {/* <ReactPlayer
-                                        url={sound}
-                                        ref={playerRef}
-                                        width="400px"
-                                        height="50px"
-                                        controls={true}
-                                        playing={playing}
-                                        onPlay={play}
-                                        onPause={pause}
-                                        /> */}
                                     </div>
-                                    <div className="form-check form-switch mt-3">
-                                        <input
-                                            onChange={handleRepeat}
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            id="flexSwitchCheckDefault"
-                                            checked={isRepeatedOn}
-                                        ></input>
-                                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                                            Lặp lại
-                                        </label>
-                                    </div>
-                                    <div className="form-check form-switch">
-                                        <input
-                                            onChange={handleVietnameseSubtitle}
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            id="flexSwitchCheckVietnameseSubtitle"
-                                            checked={isVietnamese}
-                                        ></input>
-                                        <label className="form-check-label" htmlFor="flexSwitchCheckVietnameseSubtitle">
-                                            Tiếng Việt
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            {/* <Scrollbars style={{ height: `${windowSize[1] - 64 - 160 - 57}px` }}> */}
-                            <Scrollbars style={{ height: `${windowSize[1] - 300 - 57}px` }}>
-                                {/* <h2>current time playing: {currentTime} second.</h2> */}
 
-                                {isDictating ? (
-                                    <div className="row">
-                                        <div className="col-sm-3"></div>
-                                        <div className="col-sm-6">
-                                            <div className="mt-3 mb-3">
-                                                <button
-                                                    onClick={handlePrevious}
-                                                    type="button"
-                                                    className="btn btn-secondary rounded-pill btn-sm"
-                                                >
-                                                    Câu trước
-                                                </button>{' '}
-                                                <button
-                                                    onClick={handleListenAgain}
-                                                    type="button"
-                                                    className="btn btn-secondary rounded-pill btn-sm"
-                                                >
-                                                    Nghe lại
-                                                </button>{' '}
-                                                {/* <button
-                                                onClick={handleCheckAnswer}
-                                                type="button"
-                                                className="btn btn-secondary rounded-pill btn-sm"
-                                                >
-                                                Kiểm tra
-                                                </button> */}
-                                                <button
-                                                    onClick={handleShowCorrectAnswer}
-                                                    type="button"
-                                                    className="btn btn-secondary rounded-pill btn-sm"
-                                                >
-                                                    Đáp án
-                                                </button>{' '}
-                                                <button
-                                                    onClick={handleClearAnswer}
-                                                    type="button"
-                                                    className="btn btn-secondary rounded-pill btn-sm"
-                                                >
-                                                    Xóa
-                                                </button>{' '}
-                                                <button
-                                                    onClick={handleNext}
-                                                    type="button"
-                                                    className="btn btn-secondary rounded-pill btn-sm"
-                                                >
-                                                    Câu sau
-                                                </button>
-                                            </div>
-
+                                    {isDictating ? (
+                                        // listening and fill in the blanks
+                                        // render sentences
+                                        <div className="border border-white rounded-3 p-2 w-md-75 w-xl-50 mx-auto dictating-window">
+                                            {/* <SimpleBar style={{ height: `50vh` }}> */}
                                             {level !== 'all' ? (
                                                 // listening then fill in the blanks
-                                                <div className="mt-3">
+                                                <div className="fill-in-the-blanks">
                                                     {tapescript[textIndex]?.seperatedText?.map((word, index) => {
                                                         const isIncluded =
                                                             tapescript[textIndex].selectedDictationIndex.includes(
                                                                 index,
                                                             );
                                                         if (isIncluded) {
+                                                            // const blankWidth = 100;
+                                                            const blankWidth = word.length * 12;
+                                                            // console.log(blankWidth);
                                                             const indexAnswer = tapescript[
                                                                 textIndex
                                                             ].selectedDictationIndex.findIndex((i) => i === index);
@@ -1046,6 +1010,7 @@ export default function Learning() {
                                                                                     : 'form-control-dictation-wrong'
                                                                             }
                                                                             style={{
+                                                                                width: `${blankWidth}px`,
                                                                                 color:
                                                                                     answer0.toLowerCase() ===
                                                                                     word.toLowerCase()
@@ -1055,7 +1020,6 @@ export default function Learning() {
                                                                             value={answer0}
                                                                             onChange={(e) => setAnswer0(e.target.value)}
                                                                         />
-                                                                        // {isCorrectAnswer0? <></>:<></>}
                                                                     );
                                                                 case 1:
                                                                     correctAnswer1 = word;
@@ -1072,6 +1036,7 @@ export default function Learning() {
                                                                                     : 'form-control-dictation-wrong'
                                                                             }
                                                                             style={{
+                                                                                width: `${blankWidth}px`,
                                                                                 color:
                                                                                     answer1.toLowerCase() ===
                                                                                     word.toLowerCase()
@@ -1097,6 +1062,7 @@ export default function Learning() {
                                                                                     : 'form-control-dictation-wrong'
                                                                             }
                                                                             style={{
+                                                                                width: `${blankWidth}px`,
                                                                                 color:
                                                                                     answer2.toLowerCase() ===
                                                                                     word.toLowerCase()
@@ -1122,6 +1088,7 @@ export default function Learning() {
                                                                                     : 'form-control-dictation-wrong'
                                                                             }
                                                                             style={{
+                                                                                width: `${blankWidth}px`,
                                                                                 color:
                                                                                     answer3.toLowerCase() ===
                                                                                     word.toLowerCase()
@@ -1147,6 +1114,7 @@ export default function Learning() {
                                                                                     : 'form-control-dictation-wrong'
                                                                             }
                                                                             style={{
+                                                                                width: `${blankWidth}px`,
                                                                                 color:
                                                                                     answer4.toLowerCase() ===
                                                                                     word.toLowerCase()
@@ -1172,6 +1140,7 @@ export default function Learning() {
                                                                                     : 'form-control-dictation-wrong'
                                                                             }
                                                                             style={{
+                                                                                width: `${blankWidth}px`,
                                                                                 color:
                                                                                     answer5.toLowerCase() ===
                                                                                     word.toLowerCase()
@@ -1186,17 +1155,6 @@ export default function Learning() {
                                                         } else {
                                                             return <span key={index}>{word}</span>;
                                                         }
-                                                        // return isIncluded ? (
-                                                        //     <input
-                                                        //         key={index}
-                                                        //         type="text"
-                                                        //         className="form-control-dictation"
-                                                        //         value={`answer${indexAnswer}`}
-                                                        //         onChange={(e) => `setAnswer${indexAnswer}`(e.target.value)}
-                                                        //     />
-                                                        // ) : (
-                                                        //     <span key={index}>{word}</span>
-                                                        // );
                                                     })}
                                                 </div>
                                             ) : (
@@ -1213,66 +1171,71 @@ export default function Learning() {
                                                     />
                                                 </div>
                                             )}
-                                            {isVietnamese ? (
-                                                <p className="mt-3">{tapescript[textIndex].vietnamese}</p>
-                                            ) : (
-                                                <></>
+                                            {isVietnamese && (
+                                                <p className="text-subtitle mt-2">{tapescript[textIndex].vietnamese}</p>
                                             )}
+                                            {/* </SimpleBar> */}
                                         </div>
-                                        <div className="col-sm-3"></div>
-                                    </div>
-                                ) : (
-                                    // listening with tapescript UI
-                                    <div className="">
-                                        {tapescript?.map((text, index) => (
-                                            <div className="mb-3 ms-3" key={index}>
-                                                {text.seperatedText?.map((word, i) => (
-                                                    <span
-                                                        onClick={(e) => handleClickSentence(e, text)}
-                                                        style={{
-                                                            color:
-                                                                currentTime > text.timeStartSeperatedText[i] / 1000 &&
-                                                                currentTime < text.timeEndSeperatedText[i] / 1000
-                                                                    ? 'Tomato'
-                                                                    : '',
-                                                            border:
-                                                                currentTime > text.timeStartSeperatedText[i] / 1000 &&
-                                                                currentTime < text.timeEndSeperatedText[i] / 1000
-                                                                    ? '0.1px solid Tomato'
-                                                                    : '',
-                                                            borderRadius:
-                                                                currentTime > text.timeStartSeperatedText[i] / 1000 &&
-                                                                currentTime < text.timeEndSeperatedText[i] / 1000
-                                                                    ? '5px'
-                                                                    : '',
-                                                        }}
-                                                        key={i}
-                                                    >
-                                                        {word}
-                                                    </span>
+                                    ) : (
+                                        // listening with tapescript UI
+                                        <div className="p-2 w-md-75 w-xl-50 mx-auto tapescript-window">
+                                            {/* <Scrollbars style={{ height: '50vh' }}> */}
+                                            {/* <SimpleBar style={{ height: `${windowSize[1] - 57 - 100}px` }}> */}
+                                            {/* <SimpleBar style={{ height: '50vh' }}> */}
+                                            <div className="">
+                                                {tapescript?.map((text, index) => (
+                                                    <div className="mb-3" key={index}>
+                                                        {text.seperatedText?.map((word, i) => (
+                                                            <span
+                                                                onClick={(e) => handleClickSentence(e, text)}
+                                                                style={{
+                                                                    color:
+                                                                        currentTime >
+                                                                            text.timeStartSeperatedText[i] / 1000 &&
+                                                                        currentTime <
+                                                                            text.timeEndSeperatedText[i] / 1000
+                                                                            ? 'Tomato'
+                                                                            : '',
+                                                                    border:
+                                                                        currentTime >
+                                                                            text.timeStartSeperatedText[i] / 1000 &&
+                                                                        currentTime <
+                                                                            text.timeEndSeperatedText[i] / 1000
+                                                                            ? '0.1px solid Tomato'
+                                                                            : '',
+                                                                    borderRadius:
+                                                                        currentTime >
+                                                                            text.timeStartSeperatedText[i] / 1000 &&
+                                                                        currentTime <
+                                                                            text.timeEndSeperatedText[i] / 1000
+                                                                            ? '5px'
+                                                                            : '',
+                                                                }}
+                                                                key={i}
+                                                            >
+                                                                {word}
+                                                            </span>
+                                                        ))}
+                                                        <br></br>
+                                                        {isVietnamese && (
+                                                            <span
+                                                                // onClick={(e) => handleClickSentence(e, text)}
+                                                                className="text-subtitle"
+                                                                // style={{
+                                                                //     color:
+                                                                //         currentTime > text.timeStart / 1000 &&
+                                                                //         currentTime < text.timeEnd / 1000
+                                                                //             ? 'SlateBlue'
+                                                                //             : '',
+                                                                // }}
+                                                            >
+                                                                {text.vietnamese}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 ))}
-                                                <br></br>
-                                                {isVietnamese ? (
-                                                    <span
-                                                        onClick={(e) => handleClickSentence(e, text)}
-                                                        className="text-button-subtitle"
-                                                        style={{
-                                                            color:
-                                                                currentTime > text.timeStart / 1000 &&
-                                                                currentTime < text.timeEnd / 1000
-                                                                    ? 'SlateBlue'
-                                                                    : '',
-                                                        }}
-                                                    >
-                                                        {text.vietnamese}
-                                                    </span>
-                                                ) : (
-                                                    <></>
-                                                )}
-                                            </div>
-                                        ))}
 
-                                        {/* {tapescript?.map((text, index) => (
+                                                {/* {tapescript?.map((text, index) => (
                                         <div className="mb-3" key={index}>
                                             <span
                                                 onClick={(e) => handleClickSentence(e, text)}
@@ -1309,72 +1272,445 @@ export default function Learning() {
                                             <br></br>
                                         </div>
                                     ))} */}
-                                    </div>
-                                )}
-                            </Scrollbars>
-                        </div>
-                    ) : (
-                        <div>
-                            <h1 className="display-6 bg-secondary text-light p-5">{course.title}</h1>
-                        </div>
-                    )}
-                </div>
-
-                {/* right column, the accordion */}
-                <div className="col-sm-3 learning-top-margin mx-0 p-0" id="col-right">
-                    <h5 ref={contentTitleRef} className="bg-secondary-subtle p-3 m-0">
-                        Nội dung
-                    </h5>
-                    {/* <Scrollbars ref={accordionRef} style={{ height: `${windowSize[1] - 64 - 56 - 57}px` }}> */}
-                    <Scrollbars ref={accordionRef} style={{ height: `${windowSize[1] - 300 - 57}px` }}>
-                        <div className="accordion accordion-flush" id="accordionExample">
-                            {curriculums?.map((curriculum, index) => (
-                                <div className="accordion-item" key={curriculum._id}>
-                                    <h2 className="accordion-header" id={`panelsStayOpen-heading-${curriculum.slug}`}>
-                                        <button
-                                            className="accordion-button collapsed"
-                                            type="button"
-                                            data-bs-toggle="collapse"
-                                            data-bs-target={`#panelsStayOpen-collapse-${curriculum.slug}`}
-                                            aria-expanded="false"
-                                            aria-controls={`panelsStayOpen-collapse-${curriculum.slug}`}
-                                        >
-                                            {curriculum.title}
-                                            <br></br>
-                                            3/3 | 11min
-                                        </button>
-                                    </h2>
-                                    <div
-                                        ref={(el) => (accItemsRefs.current[index] = el)}
-                                        id={`panelsStayOpen-collapse-${curriculum.slug}`}
-                                        className="accordion-collapse collapse"
-                                        data-bs-parent="#accordionExample"
-                                        aria-labelledby={`panelsStayOpen-heading-${curriculum.title}`}
-                                    >
-                                        <div className="accordion-body">
-                                            <div className="list-group list-group-flush list-group-numbered">
-                                                {curriculum.lessons?.map((lesson) => (
-                                                    <a
-                                                        onClick={(e) => handleClickLesson(e, lesson._id)}
-                                                        className="list-group-item list-group-item-action"
-                                                        key={lesson._id}
-                                                    >
-                                                        {lesson.title}
-                                                    </a>
-                                                ))}
                                             </div>
+                                            {/* </SimpleBar> */}
+                                            {/* </Scrollbars> */}
+                                        </div>
+                                    )}
+
+                                    {/* lesson title and progress bar shown on Mobile */}
+                                    {isMobile && (
+                                        <div className="mt-4">
+                                            <div className="d-flex justify-content-between">
+                                                <p className="fw-bolder text-capitalize mx-3">{lessonTitle}</p>
+                                                <div className="mx-2">
+                                                    {isDictating && (
+                                                        <button
+                                                            // onClick={handleRepeat}
+                                                            type="button"
+                                                            className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                        >
+                                                            <i className="fa-solid fa-stairs"></i>
+                                                        </button>
+                                                    )}
+                                                    {isDictating && (
+                                                        <button
+                                                            // onClick={handleRepeat}
+                                                            type="button"
+                                                            className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                        >
+                                                            <i className="fa-solid fa-gauge-high"></i>
+                                                        </button>
+                                                    )}
+                                                    {isRepeatedOn ? (
+                                                        <button
+                                                            onClick={handleRepeat}
+                                                            type="button"
+                                                            className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                        >
+                                                            {/* <PiRepeatThin /> */}
+                                                            <i class="fa-solid fa-arrow-right"></i>
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            onClick={handleRepeat}
+                                                            type="button"
+                                                            className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                        >
+                                                            <i className="fa-solid fa-repeat"></i>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="progress mx-3" style={{ height: '2px' }}>
+                                                <div
+                                                    class="progress-bar"
+                                                    role="progressbar"
+                                                    style={{ width: '25%' }}
+                                                    aria-valuenow="25"
+                                                    aria-valuemin="0"
+                                                    aria-valuemax="100"
+                                                ></div>
+                                            </div>
+                                            <div className="d-flex justify-content-between mx-3 mt-1">
+                                                <p className="time-progress">0.0</p>
+                                                <p className="time-progress">4.3</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* button bar for utilities */}
+                                    {isMobile ? (
+                                        <div className="d-flex justify-content-between mx-2">
+                                            {isDictating && !isCheckAnswer && (
+                                                <button
+                                                    onClick={handleShowCorrectAnswer}
+                                                    type="button"
+                                                    className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                >
+                                                    {/* <i className="fa-solid fa-circle-check"></i> */}
+                                                    <i class="fa-solid fa-spell-check"></i>
+                                                </button>
+                                            )}
+                                            {isDictating && isCheckAnswer && (
+                                                <button
+                                                    onClick={handleClearAnswer}
+                                                    type="button"
+                                                    className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                >
+                                                    <i className="fa-solid fa-eraser"></i>
+                                                </button>
+                                            )}
+                                            {/* {isVietnamese ? (
+                                                <button
+                                                    onClick={handleVietnameseSubtitle}
+                                                    type="button"
+                                                    className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                >
+                                                    <i className="fa-solid fa-closed-captioning"></i>
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={handleVietnameseSubtitle}
+                                                    type="button"
+                                                    className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                >
+                                                    <i className="fa-regular fa-closed-captioning"></i>
+                                                </button>
+                                            )} */}
+                                            {/* {isRepeatedOn ? (
+                                                <button
+                                                    onClick={handleRepeat}
+                                                    type="button"
+                                                    className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                >
+                                                    <PiRepeatThin />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={handleRepeat}
+                                                    type="button"
+                                                    className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                >
+                                                    <i className="fa-solid fa-repeat"></i>
+                                                </button>
+                                            )} */}
+
+                                            {/* {isDictating && (
+                                                <button
+                                                    // onClick={handleRepeat}
+                                                    type="button"
+                                                    className="btn btn-primary btn-sm border-0 bg-transparent"
+                                                >
+                                                    <i className="fa-solid fa-stairs"></i>
+                                                </button>
+                                            )} */}
+                                            {/* <button
+                                                // onClick={handleRepeat}
+                                                type="button"
+                                                className="btn btn-primary btn-sm border-0 bg-transparent"
+                                            >
+                                                <i className="fa-solid fa-gauge-high"></i>
+                                            </button> */}
+                                        </div>
+                                    ) : (
+                                        <div className="d-flex justify-content-center">
+                                            <div className="btn-group" role="group" aria-label="Basic example">
+                                                {isVietnamese ? (
+                                                    <button
+                                                        onClick={handleVietnameseSubtitle}
+                                                        type="button"
+                                                        className="btn btn-secondary btn-sm"
+                                                    >
+                                                        <i className="fa-solid fa-closed-captioning"></i>
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={handleVietnameseSubtitle}
+                                                        type="button"
+                                                        className="btn btn-secondary btn-sm"
+                                                    >
+                                                        <i className="fa-regular fa-closed-captioning"></i>
+                                                    </button>
+                                                )}
+                                                {isRepeatedOn ? (
+                                                    <button
+                                                        onClick={handleRepeat}
+                                                        type="button"
+                                                        className="btn btn-secondary btn-sm"
+                                                    >
+                                                        <PiRepeatThin />
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={handleRepeat}
+                                                        type="button"
+                                                        className="btn btn-secondary btn-sm"
+                                                    >
+                                                        <i className="fa-solid fa-repeat"></i>
+                                                    </button>
+                                                )}
+
+                                                {isDictating && (
+                                                    <button
+                                                        // onClick={handleRepeat}
+                                                        type="button"
+                                                        className="btn btn-secondary btn-sm"
+                                                    >
+                                                        <i className="fa-solid fa-stairs"></i>
+                                                    </button>
+                                                )}
+                                                <button
+                                                    // onClick={handleRepeat}
+                                                    type="button"
+                                                    className="btn btn-secondary btn-sm"
+                                                >
+                                                    <i className="fa-solid fa-gauge-high"></i>
+                                                </button>
+
+                                                {isDictating && (
+                                                    <button
+                                                        onClick={handleShowCorrectAnswer}
+                                                        type="button"
+                                                        className="btn btn-secondary btn-sm"
+                                                    >
+                                                        <i className="fa-solid fa-circle-check"></i>
+                                                    </button>
+                                                )}
+                                                {isDictating && (
+                                                    <button
+                                                        onClick={handleClearAnswer}
+                                                        type="button"
+                                                        className="btn btn-secondary"
+                                                    >
+                                                        <i className="fa-solid fa-eraser"></i>
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* button bar for playing */}
+                                    {isMobile ? (
+                                        <div className="d-flex justify-content-between">
+                                            {isVietnamese ? (
+                                                <button
+                                                    onClick={handleVietnameseSubtitle}
+                                                    type="button"
+                                                    className="btn btn-primary border-0 bg-transparent fs-1"
+                                                >
+                                                    <i className="fa-solid fa-closed-captioning"></i>
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={handleVietnameseSubtitle}
+                                                    type="button"
+                                                    className="btn btn-primary border-0 bg-transparent fs-1"
+                                                >
+                                                    <i className="fa-regular fa-closed-captioning"></i>
+                                                </button>
+                                            )}
+                                            {/* <button
+                                                onClick={handleListenAgain}
+                                                type="button"
+                                                className="btn btn-primary border-0 bg-transparent fs-1"
+                                            >
+                                                <i className="fa-solid fa-rotate-right"></i>
+                                            </button> */}
+                                            <button
+                                                onClick={handlePrevious}
+                                                type="button"
+                                                className="btn btn-primary border-0 bg-transparent fs-1"
+                                            >
+                                                <i className="fa-solid fa-backward-step"></i>
+                                            </button>
+
+                                            {playing ? (
+                                                <button
+                                                    onClick={pause}
+                                                    type="button"
+                                                    className="btn btn-primary border-0 bg-transparent fs-1"
+                                                >
+                                                    <i className="fa-solid fa-circle-pause"></i>
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={play}
+                                                    type="button"
+                                                    className="btn btn-primary border-0 bg-transparent fs-1"
+                                                >
+                                                    <i className="fa-solid fa-circle-play"></i>
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={handleNext}
+                                                type="button"
+                                                className="btn btn-primary border-0 bg-transparent fs-1"
+                                            >
+                                                <i className="fa-solid fa-forward-step"></i>
+                                            </button>
+                                            {isDictating ? (
+                                                <button
+                                                    onClick={handleShowTapescript}
+                                                    type="button"
+                                                    className="btn btn-primary border-0 bg-transparent fs-1"
+                                                >
+                                                    {/* <i className="fa-solid fa-scroll"></i> */}
+                                                    <i class="fa-solid fa-book-open"></i>
+                                                    {/* <i class="fa-solid fa-book"></i> */}
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={handleShowDictation}
+                                                    type="button"
+                                                    className="btn btn-primary border-0 bg-transparent fs-1"
+                                                >
+                                                    <i className="fa-solid fa-pen-clip"></i>
+                                                </button>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="d-flex justify-content-center">
+                                            <button
+                                                onClick={handleListenAgain}
+                                                type="button"
+                                                className="btn btn-primary btn-custom"
+                                            >
+                                                <i className="fa-solid fa-rotate-right"></i>
+                                            </button>
+                                            <button
+                                                onClick={handlePrevious}
+                                                type="button"
+                                                className="btn btn-primary btn-custom"
+                                            >
+                                                <i className="fa-solid fa-backward-step"></i>
+                                            </button>
+
+                                            {playing ? (
+                                                <button
+                                                    onClick={pause}
+                                                    type="button"
+                                                    className="btn btn-primary btn-custom"
+                                                >
+                                                    <i className="fa-solid fa-circle-pause"></i>
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={play}
+                                                    type="button"
+                                                    className="btn btn-primary btn-custom"
+                                                >
+                                                    <i className="fa-solid fa-circle-play"></i>
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={handleNext}
+                                                type="button"
+                                                className="btn btn-primary btn-custom"
+                                            >
+                                                <i className="fa-solid fa-forward-step"></i>
+                                            </button>
+                                            {isDictating ? (
+                                                <button
+                                                    onClick={handleShowTapescript}
+                                                    type="button"
+                                                    className="btn btn-primary btn-custom"
+                                                >
+                                                    <i className="fa-solid fa-scroll"></i>
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={handleShowDictation}
+                                                    type="button"
+                                                    className="btn btn-primary btn-custom"
+                                                >
+                                                    <i className="fa-solid fa-pen-clip"></i>
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div>
+                                    <h3 className="bg-secondary text-light p-3">{course.title}</h3>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* right column, the accordion */}
+                        <div className="col-md-4 col-lg-4 col-xxl-3" id="col-right">
+                            {/* <Scrollbars ref={accordionRef} style={{ height: `${windowSize[1] - 300 - 57}px` }}></Scrollbars> */}
+
+                            {/* <div className="accordion accordion-flush mb-5" id="accordionExample">
+                        {curriculums?.map((curriculum, index) => (
+                            <div className="accordion-item" key={curriculum._id}>
+                                <h2 className="accordion-header" id={`panelsStayOpen-heading-${curriculum.slug}`}>
+                                    <button
+                                        className="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target={`#panelsStayOpen-collapse-${curriculum.slug}`}
+                                        aria-expanded="false"
+                                        aria-controls={`panelsStayOpen-collapse-${curriculum.slug}`}
+                                    >
+                                        {curriculum.title}
+                                        <br></br>
+                                        3/3 | 11min
+                                    </button>
+                                </h2>
+                                <div
+                                    ref={(el) => (accItemsRefs.current[index] = el)}
+                                    id={`panelsStayOpen-collapse-${curriculum.slug}`}
+                                    className="accordion-collapse collapse"
+                                    data-bs-parent="#accordionExample"
+                                    aria-labelledby={`panelsStayOpen-heading-${curriculum.title}`}
+                                >
+                                    <div className="accordion-body">
+                                        <div className="list-group list-group-flush list-group-numbered">
+                                            {curriculum.lessons?.map((lesson) => (
+                                                <a
+                                                    onClick={(e) => handleClickLesson(e, lesson._id)}
+                                                    className="list-group-item list-group-item-action"
+                                                    key={lesson._id}
+                                                >
+                                                    {lesson.title}
+                                                </a>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            </div>
+                        ))}
+                    </div> */}
+                            {isScrollbarsApplied ? (
+                                <>
+                                    <h5 ref={contentTitleRef} className="bg-secondary-subtle p-3 m-0">
+                                        Nội dung khóa học
+                                    </h5>
+                                    <SimpleBar
+                                        scrollableNodeProps={{ ref: accordionRef }}
+                                        style={{ height: `${windowSize[1] - 56}px` }}
+                                    >
+                                        <Menu></Menu>
+                                    </SimpleBar>
+                                </>
+                            ) : (
+                                <>
+                                    {!isLessonSelected && (
+                                        <h5 ref={contentTitleRef} className="bg-secondary-subtle p-3 m-0">
+                                            Nội dung khóa học
+                                        </h5>
+                                    )}
+                                    {!isLessonSelected && <Menu></Menu>}
+                                </>
+                            )}
                         </div>
-                    </Scrollbars>
+                    </div>
                 </div>
-            </div>
-            {/* <div className="text-center bg-light w-100 position-fixed bottom-0 start-0" style={{ height: '3rem' }}>
-                <h3>Bottom Bar</h3>
-            </div> */}
-            <LearningBottomBar></LearningBottomBar>
+            </section>
+
+            {/* <LearningBottomBar></LearningBottomBar> */}
         </div>
     );
 }
