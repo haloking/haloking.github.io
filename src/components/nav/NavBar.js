@@ -60,7 +60,7 @@ export default function NavBar() {
                             <div className="offcanvas-body">
                                 <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
                                     <li className="nav-item">
-                                        <a className="nav-link mx-lg-2" aria-current="page" href="/">
+                                        <a className="nav-link active mx-lg-2" aria-current="page" href="/">
                                             Trang chủ
                                         </a>
                                     </li>
