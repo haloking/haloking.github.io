@@ -5,8 +5,8 @@ import HomeContent from './HomeContent';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 
-import 'overlayscrollbars/overlayscrollbars.css';
-import { OverlayScrollbarsComponent, useOverlayScrollbars } from 'overlayscrollbars-react';
+// import 'overlayscrollbars/overlayscrollbars.css';
+// import { OverlayScrollbarsComponent, useOverlayScrollbars } from 'overlayscrollbars-react';
 
 import useSize from '../helpers/useSize';
 
