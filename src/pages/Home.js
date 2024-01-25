@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 
 import HomeContent from './HomeContent';
 
-import SimpleBar from 'simplebar-react';
-import 'simplebar-react/dist/simplebar.min.css';
+// import SimpleBar from 'simplebar-react';
+// import 'simplebar-react/dist/simplebar.min.css';
 
 // import 'overlayscrollbars/overlayscrollbars.css';
 // import { OverlayScrollbarsComponent, useOverlayScrollbars } from 'overlayscrollbars-react';
@@ -55,8 +55,8 @@ export default function Home() {
 
                 // <OverlayScrollbarsComponent style={{ height: `${windowSize[1]}px` }}>
                 // </OverlayScrollbarsComponent>
-
-                <SimpleBar style={{ height: `${windowSize[1]}px` }}>
+                <div>
+                    {/* <SimpleBar style={{ height: `${windowSize[1]}px` }}> */}
                     <HomeContent></HomeContent>
 
                     <p>
@@ -71,7 +71,8 @@ export default function Home() {
                     </p>
                     <MediaDetect></MediaDetect>
                     <h5>Applied Customized ScrollBar</h5>
-                </SimpleBar>
+                    {/* </SimpleBar> */}
+                </div>
             ) : (
                 <>
                     <HomeContent></HomeContent>

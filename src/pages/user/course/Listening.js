@@ -11,8 +11,8 @@ import ReactDOM from 'react-dom';
 import ReactPlayer from 'react-player';
 // import $ from 'jquery';
 
-import SimpleBar from 'simplebar-react';
-import 'simplebar-react/dist/simplebar.min.css';
+// import SimpleBar from 'simplebar-react';
+// import 'simplebar-react/dist/simplebar.min.css';
 
 // import 'overlayscrollbars/overlayscrollbars.css';
 // import { OverlayScrollbarsComponent, useOverlayScrollbars } from 'overlayscrollbars-react';
@@ -1685,12 +1685,12 @@ export default function Learning() {
                                     <h5 ref={contentTitleRef} className="bg-secondary-subtle p-3 m-0">
                                         Nội dung khóa học
                                     </h5>
-                                    <SimpleBar
+                                    {/* <SimpleBar
                                         scrollableNodeProps={{ ref: accordionRef }}
                                         style={{ height: `${windowSize[1] - 56}px` }}
-                                    >
-                                        <Menu></Menu>
-                                    </SimpleBar>
+                                    > */}
+                                    <Menu></Menu>
+                                    {/* </SimpleBar> */}
                                 </>
                             ) : (
                                 <>
